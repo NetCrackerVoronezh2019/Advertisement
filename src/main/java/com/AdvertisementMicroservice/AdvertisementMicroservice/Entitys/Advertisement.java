@@ -1,8 +1,9 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys;
 
 import java.time.LocalDateTime;
-
 import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name="ADVERTISEMENTS")
@@ -27,6 +28,7 @@ public class Advertisement {
 	private String budget;
 	
 	@Column(name="DATEOFPUBLICATION")
+	@JsonProperty(access=Access.READ_ONLY)
 	private LocalDateTime dateOfPublication;
 	
 	@Column(name="DEADLINE")
