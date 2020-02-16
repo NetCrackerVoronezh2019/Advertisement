@@ -10,4 +10,5 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Subject;
 @Transactional
 public interface SubjectRepository extends JpaRepository<Subject,Long>{
 
+	public Subject findByName(String name);
 }

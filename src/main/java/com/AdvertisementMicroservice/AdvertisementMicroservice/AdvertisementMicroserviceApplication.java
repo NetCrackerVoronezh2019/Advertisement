@@ -16,11 +16,9 @@ public class AdvertisementMicroserviceApplication {
 		Utility utility=(Utility) app.getBean("utility");	
 	    utility.sendPortModelToConfig("http://localhost:7082/setPortModel");
 	    Thread consumerThread1 =new Thread(a.getRunnable());
-	     Thread consumerThread2 =new Thread(a.getRunnable2());
-	      consumerThread1.start();
-	    consumerThread2.start();
-	    
-	 
-	}
+	    Thread consumerThread2 =new Thread(a.getRunnable2());
+	    consumerThread1.start();
+	    consumerThread2.start();	    
+		}
 
 }

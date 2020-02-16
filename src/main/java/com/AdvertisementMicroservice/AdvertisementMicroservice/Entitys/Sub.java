@@ -1,23 +1,15 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
-@Table(name="SUBJECTS")
-public class Subject {
+@Table(name="SUBJECTS2")
+public class Sub {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,7 +21,6 @@ public class Subject {
 	private String translateName;
 	@Column(name="URL")
 	private String url;
-	
 	public Long getId() {
 		return id;
 	}

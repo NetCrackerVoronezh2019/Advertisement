@@ -10,11 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertisement;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.AdvertisementSections;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Subject;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AdvertisementModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.AdvertisementRepository;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.SubjectRepository;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.SubjectService;
 
 @RestController
 @CrossOrigin("http://localhost:4200")
@@ -24,20 +24,14 @@ public class AdvertisementController {
 	private  AdvertisementRepository ar;
 	
 	@Autowired
-	private  SubjectRepository rep;
+	private  SubjectService subjectService;
 	
-	@GetMapping("subj")
+	@GetMapping("allsubjects")
 	public List<Subject> getAllSubjects()
 	{
-		return rep.findAll();
+		return subjectService.getAllSubjects();
 	}
 	
-	@GetMapping("getSections")
-	public ResponseEntity<List<AdvertisementSections>> getSections()
-	{
-		List<AdvertisementSections> sections=Arrays.asList(AdvertisementSections.values());
-		return new ResponseEntity<>(sections,HttpStatus.OK);
-	}
 	
 	@GetMapping("student/alladvertisements")
 	public ResponseEntity<List<Advertisement>> getAllAdvertisements()
@@ -47,6 +41,7 @@ public class AdvertisementController {
 		
 	}
 	
+	
 	@GetMapping("student/advertisement/{id}")
 	public ResponseEntity<Advertisement> getadvbyid(@PathVariable String id)
 	{
@@ -55,10 +50,18 @@ public class AdvertisementController {
 	}
 	
 	@PostMapping("student/addadvertisement")
-	public ResponseEntity<?> addnewAdvertisement(@RequestBody Advertisement a)
+	public ResponseEntity<?> addnewAdvertisement(@RequestBody Advertisement adv)
 	{
-		a.setDateOfPublication(LocalDateTime.now());
-		ar.save(a);
+		adv.setDateOfPublication(LocalDateTime.now());
+		if(adv.getImageUrl()==null)
+		{
+			String subject=adv.getSection();
+			Subject _subject=subjectService.getByName(subject);
+			adv.setImageUrl(_subject.getUrl());
+		}
+		ar.save(adv);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	
+	
 }

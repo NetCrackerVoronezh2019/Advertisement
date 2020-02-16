@@ -2,38 +2,40 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 
 import java.time.LocalDateTime;
 
+
 public class AdvertisementModel {
 	
-	private Long userId;
+	private Long advertisementId;
+	private Long authorId;
 	private String advertisementName;
-	private String advertisementSection;
-	private LocalDateTime deadlineDate;
+	private LocalDateTime deadline;
 	private String description;
-	
-	public Long getUserId() {
-		return userId;
+	private LocalDateTime dateOfPublication;
+	private String budget;
+	private SubjectModel section;
+	public Long getAdvertisementId() {
+		return advertisementId;
 	}
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setAdvertisementId(Long advertisementId) {
+		this.advertisementId = advertisementId;
 	}
-	
+	public Long getAuthorId() {
+		return authorId;
+	}
+	public void setAuthorId(Long authorId) {
+		this.authorId = authorId;
+	}
 	public String getAdvertisementName() {
 		return advertisementName;
 	}
 	public void setAdvertisementName(String advertisementName) {
 		this.advertisementName = advertisementName;
 	}
-	public String getAdvertisementSection() {
-		return advertisementSection;
+	public LocalDateTime getDeadline() {
+		return deadline;
 	}
-	public void setAdvertisementSection(String advertisementSection) {
-		this.advertisementSection = advertisementSection;
-	}
-	public LocalDateTime getDeadlineDate() {
-		return deadlineDate;
-	}
-	public void setDeadlineDate(LocalDateTime deadlineDate) {
-		this.deadlineDate = deadlineDate;
+	public void setDeadline(LocalDateTime deadline) {
+		this.deadline = deadline;
 	}
 	public String getDescription() {
 		return description;
@@ -41,5 +43,24 @@ public class AdvertisementModel {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	public LocalDateTime getDateOfPublication() {
+		return dateOfPublication;
+	}
+	public void setDateOfPublication(LocalDateTime dateOfPublication) {
+		this.dateOfPublication = dateOfPublication;
+	}
+	public String getBudget() {
+		return budget;
+	}
+	public void setBudget(String budget) {
+		this.budget = budget;
+	}
+	public SubjectModel getSection() {
+		return section;
+	}
+	public void setSection(SubjectModel section) {
+		this.section = section;
+	}
+	
 	
 }

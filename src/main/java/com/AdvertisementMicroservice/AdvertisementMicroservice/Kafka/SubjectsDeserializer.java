@@ -1,4 +1,5 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Kafka;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import org.apache.kafka.common.serialization.Deserializer;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Subject;
@@ -20,7 +21,7 @@ public class SubjectsDeserializer implements Deserializer<SubjectServiceX> {
 		ObjectMapper mapper = new ObjectMapper();
 		SubjectServiceX subjects = null;
 	   try {
-	     subjects = mapper.readValue(data, SubjectServiceX.class);
+	     subjects = mapper.readValue(data,SubjectServiceX.class);
 	   } catch (Exception e) {
 	     e.printStackTrace();
 	   }
