@@ -12,7 +12,12 @@ import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Subject;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.SubjectService;
 
@@ -26,10 +31,12 @@ public class ConsumerThreadService {
 	
 	@Autowired 
 	private SubjectService subjectService;
-	private KafkaConsumer<String,PortModel> consumer;
-	private KafkaConsumer<String,SubjectServiceX> consumer2;
+	private KafkaConsumer<String,String> consumer;
+	private KafkaConsumer<String,String> consumer2;
+	
 	@Value("${kafka.porttopicname}")
 	private String portTopicName;
+	
 	@Value("${kafka.porttopicgroup}")
 	private String portTopicGroup;
 
@@ -41,20 +48,20 @@ public class ConsumerThreadService {
     	Properties properties1=new Properties();
     	properties1.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,bootstrapServers1);
     	properties1.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
-    	properties1.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,PortModelDeserializer.class.getName());
+    	properties1.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
     	properties1.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
     	properties1.setProperty(ConsumerConfig.GROUP_ID_CONFIG, this.portTopicGroup);
-    	this.consumer=new KafkaConsumer<String,PortModel>(properties1);
+    	this.consumer=new KafkaConsumer<String,String>(properties1);
     	consumer.subscribe(Arrays.asList(this.portTopicName));
     	
 
     	Properties properties2=new Properties();
     	properties2.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,bootstrapServers1);
     	properties2.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
-    	properties2.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,SubjectsDeserializer.class.getName());
+    	properties2.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
     	properties2.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
-    	properties2.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "gk5r1dhjdSub");
-    	this.consumer2=new KafkaConsumer<String,SubjectServiceX>(properties2);
+    	properties2.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "advertisement_subjects");
+    	this.consumer2=new KafkaConsumer<String,String>(properties2);
     	consumer2.subscribe(Arrays.asList("subjects_topic"));
 	}
 	public Runnable getRunnable()
@@ -65,18 +72,8 @@ public class ConsumerThreadService {
             	try {	
         			while(true)
         	    	{
-        	    		ConsumerRecords<String,PortModel> records=consumer.poll(Duration.ofMillis(100));	
-        	    		for(ConsumerRecord<String,PortModel> recordx:records)
-        	    		{
-        	    		  
-        	    			  if(recordx.value().microServiceName==MicroservicesEnum.ADVERTISMENT)
-          	    				micro.setAdvertismentmicroserviceport(recordx.value().port);
-          	    			else {
-          	    				if(recordx.value().microServiceName==MicroservicesEnum.MAIN)
-          	    					micro.setMainmicroserviceport(recordx.value().port);
-          	    			}
-        	    		  
-        	    		}
+        	    		ConsumerRecords<String,String> records=consumer.poll(Duration.ofMillis(100));	
+        	    		
         	    	}
         		}
         		
@@ -101,11 +98,14 @@ public class ConsumerThreadService {
             	try {	
             		while(true)
                 	{
-                		ConsumerRecords<String,SubjectServiceX> records=consumer2.poll(Duration.ofMillis(100));
-                		for(ConsumerRecord<String,SubjectServiceX> recordx:records)
+                		ConsumerRecords<String,String> records=consumer2.poll(Duration.ofMillis(100));
+                		if(records.count()>0)
                 		{
-                			subjectService.addNewSubjects(recordx.value().subjects);
+                			RestTemplate template=new RestTemplate();
+                			ResponseEntity<List<Subject>> res=template.exchange("http://localhost:7082/getallsubjects",HttpMethod.GET,null,new ParameterizedTypeReference<List<Subject>>(){});
+                			subjectService.addNewSubjects(res.getBody());
                 		}
+                		
                 	}
         		}
         		

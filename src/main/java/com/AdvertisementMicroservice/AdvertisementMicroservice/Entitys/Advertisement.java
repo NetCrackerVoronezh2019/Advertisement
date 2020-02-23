@@ -41,23 +41,22 @@ public class Advertisement {
 	@Column(name="DEADLINE")
 	private LocalDateTime deadline;
 	
-	@Column(name="IMAGEURL")
-	private String imageUrl;
+	@Column(name="IMAGEKEY")
+	private String imageKey;
 	
 	@Column(name="AUTHORID")
 	private Long authorId;
-
 	
-	public String getImageUrl() {
-		return imageUrl;
-	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-
 	public String getSection() {
 		return section;
+	}
+	
+	public String getImageKey() {
+		return imageKey;
+	}
+
+	public void setImageKey(String imageKey) {
+		this.imageKey = imageKey;
 	}
 
 	public void setSection(String section) {
