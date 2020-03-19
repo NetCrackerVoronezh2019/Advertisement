@@ -2,6 +2,8 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 
 public class AdvertisementModel {
 	
@@ -12,7 +14,23 @@ public class AdvertisementModel {
 	private String description;
 	private LocalDateTime dateOfPublication;
 	private String budget;
-	private SubjectModel section;
+	private String section;
+	private String content;
+	
+	
+	@Override
+	public String toString() {
+		return "AdvertisementModel [advertisementId=" + advertisementId + ", authorId=" + authorId
+				+ ", advertisementName=" + advertisementName + ", deadline=" + deadline + ", description=" + description
+				+ ", dateOfPublication=" + dateOfPublication + ", budget=" + budget + ", section=" + section
+				+ ", content=" + content + "]";
+	}
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
 	public Long getAdvertisementId() {
 		return advertisementId;
 	}
@@ -34,6 +52,8 @@ public class AdvertisementModel {
 	public LocalDateTime getDeadline() {
 		return deadline;
 	}
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
 	public void setDeadline(LocalDateTime deadline) {
 		this.deadline = deadline;
 	}
@@ -55,10 +75,10 @@ public class AdvertisementModel {
 	public void setBudget(String budget) {
 		this.budget = budget;
 	}
-	public SubjectModel getSection() {
+	public String getSection() {
 		return section;
 	}
-	public void setSection(SubjectModel section) {
+	public void setSection(String section) {
 		this.section = section;
 	}
 	

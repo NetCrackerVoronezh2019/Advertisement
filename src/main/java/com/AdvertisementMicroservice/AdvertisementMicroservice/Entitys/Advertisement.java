@@ -22,6 +22,11 @@ public class Advertisement {
 	@Column(name="ADVERTISEMENTID")
 	private Long advertisementId;
 	
+	@Column(name="STATUS")
+	@Enumerated(EnumType.STRING) 
+	@JsonIgnore
+	private AdvertisementStatus status;
+	
 	@Column(name="SECTION")
 	private String section;
 	
@@ -47,6 +52,27 @@ public class Advertisement {
 	@Column(name="AUTHORID")
 	private Long authorId;
 	
+	@Column(name="TEACHER_ID")
+	private Long teacherId;
+	
+	
+	
+	public AdvertisementStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(AdvertisementStatus status) {
+		this.status = status;
+	}
+
+	public Long getTeacherId() {
+		return teacherId;
+	}
+
+	public void setTeacherId(Long teacherId) {
+		this.teacherId = teacherId;
+	}
+
 	public String getSection() {
 		return section;
 	}

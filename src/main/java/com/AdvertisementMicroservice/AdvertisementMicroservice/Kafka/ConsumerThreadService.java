@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Properties;
 import javax.annotation.PostConstruct;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
@@ -23,22 +22,29 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.SubjectS
 
 
 
+
 @Service
 public class ConsumerThreadService {
-
-	@Autowired
-	private Microservices micro;
 	
 	@Autowired 
 	private SubjectService subjectService;
+	@Autowired
+	private Microservices micro;
+	
 	private KafkaConsumer<String,String> consumer;
 	private KafkaConsumer<String,String> consumer2;
 	
-	@Value("${kafka.porttopicname}")
-	private String portTopicName;
+	@Value("${kafka.microserviceInfoTopic}")
+	private String microserviceInfoTopic;
 	
-	@Value("${kafka.porttopicgroup}")
-	private String portTopicGroup;
+	@Value("${kafka.microservcieInfoGroup}")
+	private String microserviceInfoGroup;
+	
+	@Value("${kafka.subjectsTopic}")
+	private String subjectsTopic;
+	
+	@Value("${kafka.subjectsTopicGroup}")
+	private String subjectsTopicGroup;
 
 	
 	@PostConstruct
@@ -50,9 +56,9 @@ public class ConsumerThreadService {
     	properties1.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
     	properties1.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
     	properties1.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
-    	properties1.setProperty(ConsumerConfig.GROUP_ID_CONFIG, this.portTopicGroup);
+    	properties1.setProperty(ConsumerConfig.GROUP_ID_CONFIG, this.microserviceInfoTopic);
     	this.consumer=new KafkaConsumer<String,String>(properties1);
-    	consumer.subscribe(Arrays.asList(this.portTopicName));
+    	consumer.subscribe(Arrays.asList(this.microserviceInfoGroup));
     	
 
     	Properties properties2=new Properties();
@@ -60,9 +66,9 @@ public class ConsumerThreadService {
     	properties2.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
     	properties2.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
     	properties2.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
-    	properties2.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "advertisement_subjects");
+    	properties2.setProperty(ConsumerConfig.GROUP_ID_CONFIG, this.subjectsTopicGroup);
     	this.consumer2=new KafkaConsumer<String,String>(properties2);
-    	consumer2.subscribe(Arrays.asList("subjects_topic"));
+    	consumer2.subscribe(Arrays.asList(this.subjectsTopic));
 	}
 	public Runnable getRunnable()
 	{
@@ -72,8 +78,10 @@ public class ConsumerThreadService {
             	try {	
         			while(true)
         	    	{
+        				RestTemplate template=new RestTemplate();
         	    		ConsumerRecords<String,String> records=consumer.poll(Duration.ofMillis(100));	
-        	    		
+        	    		ResponseEntity<List<MicroserviceInfo>> res=template.exchange("http://localhost:7082/getallports",HttpMethod.GET,null,new ParameterizedTypeReference<List<MicroserviceInfo>>(){});
+            			micro.setPorts(res.getBody());
         	    	}
         		}
         		

@@ -39,4 +39,6 @@ public class SubjectService {
 	{
 		return subjectRepository.findByName(_name);
 	}
+	
+
 }
