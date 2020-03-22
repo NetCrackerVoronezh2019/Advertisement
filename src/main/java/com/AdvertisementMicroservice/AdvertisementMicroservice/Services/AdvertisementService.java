@@ -23,12 +23,27 @@ public class AdvertisementService {
 	}
 	
 	
+	public Advertisement save(Advertisement adv)
+	{
+		return advRep.save(adv);
+	}
+	
+	
 	public List<Advertisement> getAdvertisementsByAuthorId(Long id)
 	{
 		return advRep.findByAuthorId(id);
 	}
 	
 
+	public List<Advertisement> findAll()
+	{
+		return advRep.findAll();
+	}
+	
+	public Advertisement findById(Long id)
+	{
+		return advRep.findById(id).get();
+	}
 	public List<Advertisement> getAdvertisementsByTeacherId(Long id)
 	{
 		return advRep.findByTeacherId(id);

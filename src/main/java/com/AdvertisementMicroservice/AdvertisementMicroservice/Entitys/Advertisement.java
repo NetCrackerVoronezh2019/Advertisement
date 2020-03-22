@@ -24,7 +24,6 @@ public class Advertisement {
 	
 	@Column(name="STATUS")
 	@Enumerated(EnumType.STRING) 
-	@JsonIgnore
 	private AdvertisementStatus status;
 	
 	@Column(name="SECTION")

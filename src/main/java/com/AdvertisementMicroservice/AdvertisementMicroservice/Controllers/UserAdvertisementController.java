@@ -17,25 +17,21 @@ public class UserAdvertisementController {
 	@Autowired
 	private AdvertisementService advService;
 	
-	@Autowired
-	private AdvertisementRepository rep;
-	
-	
-	@GetMapping("student/myadvertisements/{userid}")
-	public List<Advertisement> getStudnetAdvertisements(@PathVariable Long userid)
+	@GetMapping("myAdvertisements/{userId}")
+	public List<Advertisement> getStudnetAdvertisements(@PathVariable Long userId)
 	{
-		return advService.getAdvertisementsByAuthorId(userid);
+		return advService.getAdvertisementsByAuthorId(userId);
 	}
 	
 	
-	@GetMapping("teacher/myadvertisements/{teacherid}")
-	public List<Advertisement> getTeacherAdvertisements(@PathVariable Long teacherid)
+	@GetMapping("myAdvertisements/{teacherId}")
+	public List<Advertisement> getTeacherAdvertisements(@PathVariable Long teacherId)
 	{
-		return advService.getAdvertisementsByTeacherId(teacherid);
+		return advService.getAdvertisementsByTeacherId(teacherId);
 	}
 	
 	
-	@GetMapping("student/getadvertisement/{id}/{status}")
+	@GetMapping("getAdvertisement/{id}/{status}")
 	public List<Advertisement> getAdvByIdAndStatus(@PathVariable Long id,@PathVariable AdvertisementStatus status)
 	{
 		return advService.getAdvByAuthorIdAndStatus(id, status);

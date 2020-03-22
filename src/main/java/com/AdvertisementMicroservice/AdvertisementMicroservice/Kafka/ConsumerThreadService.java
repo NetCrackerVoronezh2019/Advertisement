@@ -31,8 +31,8 @@ public class ConsumerThreadService {
 	@Autowired
 	private Microservices micro;
 	
-	private KafkaConsumer<String,String> consumer;
-	private KafkaConsumer<String,String> consumer2;
+	private KafkaConsumer<String,String> microserviceInfoConsumer;
+	private KafkaConsumer<String,String> subjectConsumer;
 	
 	@Value("${kafka.microserviceInfoTopic}")
 	private String microserviceInfoTopic;
@@ -57,8 +57,8 @@ public class ConsumerThreadService {
     	properties1.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
     	properties1.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
     	properties1.setProperty(ConsumerConfig.GROUP_ID_CONFIG, this.microserviceInfoTopic);
-    	this.consumer=new KafkaConsumer<String,String>(properties1);
-    	consumer.subscribe(Arrays.asList(this.microserviceInfoGroup));
+    	this.microserviceInfoConsumer=new KafkaConsumer<String,String>(properties1);
+    	this.microserviceInfoConsumer.subscribe(Arrays.asList(this.microserviceInfoGroup));
     	
 
     	Properties properties2=new Properties();
@@ -67,10 +67,10 @@ public class ConsumerThreadService {
     	properties2.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
     	properties2.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
     	properties2.setProperty(ConsumerConfig.GROUP_ID_CONFIG, this.subjectsTopicGroup);
-    	this.consumer2=new KafkaConsumer<String,String>(properties2);
-    	consumer2.subscribe(Arrays.asList(this.subjectsTopic));
+    	this.subjectConsumer=new KafkaConsumer<String,String>(properties2);
+    	this.subjectConsumer.subscribe(Arrays.asList(this.subjectsTopic));
 	}
-	public Runnable getRunnable()
+	public Runnable microserviceInfoRunnable()
 	{
 		return new Runnable() {
 			
@@ -79,9 +79,9 @@ public class ConsumerThreadService {
         			while(true)
         	    	{
         				RestTemplate template=new RestTemplate();
-        	    		ConsumerRecords<String,String> records=consumer.poll(Duration.ofMillis(100));	
-        	    		ResponseEntity<List<MicroserviceInfo>> res=template.exchange("http://localhost:7082/getallports",HttpMethod.GET,null,new ParameterizedTypeReference<List<MicroserviceInfo>>(){});
-            			micro.setPorts(res.getBody());
+        	    		ConsumerRecords<String,String> records=microserviceInfoConsumer.poll(Duration.ofMillis(100));	
+        	    		ResponseEntity<List<MicroserviceInfo>> res=template.exchange("http://localhost:7082/getAllInfo",HttpMethod.GET,null,new ParameterizedTypeReference<List<MicroserviceInfo>>(){});
+            			micro.setMicroservicesInfo(res.getBody());
         	    	}
         		}
         		
@@ -91,14 +91,14 @@ public class ConsumerThreadService {
         		}
         		finally
         		{
-        			consumer.close();
+        			microserviceInfoConsumer.close();
         			
         		}
             }
         };
 	}
 	
-	public Runnable getRunnable2()
+	public Runnable subjectRunnable()
 	{
 		return new Runnable() {
 
@@ -106,14 +106,13 @@ public class ConsumerThreadService {
             	try {	
             		while(true)
                 	{
-                		ConsumerRecords<String,String> records=consumer2.poll(Duration.ofMillis(100));
+                		ConsumerRecords<String,String> records=subjectConsumer.poll(Duration.ofMillis(100));
                 		if(records.count()>0)
                 		{
                 			RestTemplate template=new RestTemplate();
-                			ResponseEntity<List<Subject>> res=template.exchange("http://localhost:7082/getallsubjects",HttpMethod.GET,null,new ParameterizedTypeReference<List<Subject>>(){});
+                			ResponseEntity<List<Subject>> res=template.exchange("http://localhost:7082/getAllSubjects",HttpMethod.GET,null,new ParameterizedTypeReference<List<Subject>>(){});
                 			subjectService.addNewSubjects(res.getBody());
-                		}
-                		
+                		}                		
                 	}
         		}
         		
@@ -123,7 +122,7 @@ public class ConsumerThreadService {
         		}
         		finally
         		{
-        			consumer2.close();
+        			subjectConsumer.close();
         			
         		}
             }

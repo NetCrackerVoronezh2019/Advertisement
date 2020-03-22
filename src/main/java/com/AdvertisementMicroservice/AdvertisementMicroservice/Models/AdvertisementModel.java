@@ -49,6 +49,8 @@ public class AdvertisementModel {
 	public void setAdvertisementName(String advertisementName) {
 		this.advertisementName = advertisementName;
 	}
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
 	public LocalDateTime getDeadline() {
 		return deadline;
 	}

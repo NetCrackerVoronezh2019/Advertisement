@@ -21,13 +21,13 @@ public class CanfigController {
 	
 	@Autowired Microservices m;
 	
-	@GetMapping("getallsubjects")
+	@GetMapping("getAllSubjects")
 	public List<Subject> getallSubjects(){
 		return subjectService.getAllSubjects();
 	}
 	
 	
-	@GetMapping("getallmicro")
+	@GetMapping("getAllInfo")
 	public Microservices allmicro()
 	{
 		return m;

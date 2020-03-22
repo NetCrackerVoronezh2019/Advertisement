@@ -78,53 +78,57 @@ public class Microservices {
 		this.conversationPort = conversationPort;
 	}
 	
-	@Override
-	public String toString()
-	{
-		String ret="main-"+this.getMainPort()+"// advertisement - "+this.getAdvertismentPort()+
-				"// amazon- "+this.getAmazonPort()+"// conversation - "+this.getConversationPort();
-		return ret;
-	}
+
 	
-	
-	public void setPorts(List<MicroserviceInfo> models)
+	public void setMicroservicesInfo(List<MicroserviceInfo> models)
 	{
 		for(MicroserviceInfo model:models)
-			this.setPort(model);
+			this.setMicroserviceInfo(model);
 	}
 	
 	
-	public void setPort(MicroserviceInfo portModel)
+	public void setMicroserviceInfo(MicroserviceInfo infoModel)
 	{
 		
-		if(portModel!=null)
+		if(infoModel!=null)
 		{
-			if(portModel.getMicroserviceName()!=null && portModel.getPort()!=null && portModel.getToken()!=null)
+			if(infoModel.getMicroserviceName()!=null && infoModel.getPort()!=null && infoModel.getToken()!=null)
 			{
-				if(portModel.getMicroserviceName()==MicroservicesEnum.MAIN)
+				if(infoModel.getMicroserviceName()==MicroservicesEnum.MAIN)
 				{
-					this.setMainPort(portModel.getPort().toString());
-					this.setMain_token(portModel.getToken());
+					this.setMainPort(infoModel.getPort().toString());
+					this.setMain_token(infoModel.getToken());
 			
 				}
 				else
 				{
-					if(portModel.getMicroserviceName()==MicroservicesEnum.ADVERTISEMENT)
+					if(infoModel.getMicroserviceName()==MicroservicesEnum.ADVERTISEMENT)
 					{
-						this.setAdvertismentPort(portModel.getPort().toString());
-						this.setAdvertisement_token(portModel.getToken());
+						this.setAdvertismentPort(infoModel.getPort().toString());
+						this.setAdvertisement_token(infoModel.getToken());
 					}
 					else
 					{
-						if(portModel.getMicroserviceName()==MicroservicesEnum.CONVERSATION)
+						if(infoModel.getMicroserviceName()==MicroservicesEnum.CONVERSATION)
 						{
-							this.setConversationPort(portModel.getPort().toString());
-							this.setConversation_token(portModel.getToken());
+							this.setConversationPort(infoModel.getPort().toString());
+							this.setConversation_token(infoModel.getToken());
 						}
 						else
-						{
-							//this.setUserAndgroupsPort(portModel.getPort().toString());
-							//this.setUserAndgroups_token(portModel.getToken());
+						{	
+							if(infoModel.getMicroserviceName()==MicroservicesEnum.USERANDGROUPS)
+							{
+								
+								this.setUserAndgroups_token(infoModel.getToken());
+							}
+							else
+							{
+								if(infoModel.getMicroserviceName()==MicroservicesEnum.AMAZON)
+								{
+									this.setAmazonPort(infoModel.getPort().toString());
+									this.setAmazon_token(infoModel.getToken());
+								}
+							}
 						}
 					}
 				}

@@ -3,6 +3,10 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Controllers;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpEntity;
@@ -35,8 +39,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @CrossOrigin("http://localhost:4200")
 public class AdvertisementController {
 
-	@Autowired
-	private  AdvertisementRepository ar;
 	
 	@Autowired
 	private  SubjectService subjectService;
@@ -44,37 +46,37 @@ public class AdvertisementController {
 	@Autowired
 	private AdvertisementService advertisementService;
 		
-	@GetMapping("allsubjects")
+	@GetMapping("allSubjects")
 	public List<Subject> getAllSubjects()
 	{
 		return subjectService.getAllSubjects();
 	}
 	
-	@GetMapping("student/alladvertisements")
+	@GetMapping("allAdvertisements")
 	public ResponseEntity<List<Advertisement>> getAllAdvertisements()
 	{
-		List<Advertisement> advs=(List<Advertisement>)ar.findAll();
+		List<Advertisement> advs=advertisementService.findAll();
 		return new ResponseEntity<>(advs,HttpStatus.OK);
 		
 	}	
 	
-	@GetMapping("student/advertisement/{id}")
+	@GetMapping("advertisement/{id}")
 	public ResponseEntity<Advertisement> getadvbyid(@PathVariable String id)
 	{
-		Advertisement adv=ar.findById(Long.parseLong(id)).get();
+		Advertisement adv=advertisementService.findById(Long.parseLong(id));
 		return new ResponseEntity<>(adv,HttpStatus.OK);
 	}
 	
-	@PostMapping("student/addadvertisement")
+	@PostMapping("addAdvertisement")
 	public ResponseEntity<String> addnewAdvertisement(@RequestBody AdvertisementModel adv) throws IOException
 	{
 		
 		adv.setDateOfPublication(LocalDateTime.now());
 		Advertisement advertisement=ModelUtils.AdvertisementModelToEntity(adv);
 		advertisement.setStatus(AdvertisementStatus.ACTIVE);
-		advertisement=ar.save(advertisement);
+		advertisement=advertisementService.save(advertisement);
 		advertisement.setImageKey("adv_"+advertisement.getAdvertisementId()+"N_1");
-		ar.save(advertisement);
+		advertisementService.save(advertisement);
 		
 		AmazonModel model=new AmazonModel();
 		model.setContent(adv.getContent());
@@ -82,7 +84,7 @@ public class AdvertisementController {
 		
 	    HttpEntity<AmazonModel> requestEntity =new HttpEntity<>(model);
 		RestTemplate restTemplate = new RestTemplate();
-	    ResponseEntity<String> res=restTemplate.exchange("http://localhost:1234/uploadfile",HttpMethod.POST,requestEntity,String.class);
+	    ResponseEntity<String> res=restTemplate.exchange("http://localhost:1234/uploadFile",HttpMethod.POST,requestEntity,String.class);
 		return res;
 		
 	}
