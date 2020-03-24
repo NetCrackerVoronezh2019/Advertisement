@@ -13,18 +13,12 @@ public class AdvertisementModel {
 	private LocalDateTime deadline;
 	private String description;
 	private LocalDateTime dateOfPublication;
-	private String budget;
+	private Integer budget;
 	private String section;
 	private String content;
 	
 	
-	@Override
-	public String toString() {
-		return "AdvertisementModel [advertisementId=" + advertisementId + ", authorId=" + authorId
-				+ ", advertisementName=" + advertisementName + ", deadline=" + deadline + ", description=" + description
-				+ ", dateOfPublication=" + dateOfPublication + ", budget=" + budget + ", section=" + section
-				+ ", content=" + content + "]";
-	}
+	
 	public String getContent() {
 		return content;
 	}
@@ -71,10 +65,10 @@ public class AdvertisementModel {
 	public void setDateOfPublication(LocalDateTime dateOfPublication) {
 		this.dateOfPublication = dateOfPublication;
 	}
-	public String getBudget() {
+	public Integer getBudget() {
 		return budget;
 	}
-	public void setBudget(String budget) {
+	public void setBudget(Integer budget) {
 		this.budget = budget;
 	}
 	public String getSection() {

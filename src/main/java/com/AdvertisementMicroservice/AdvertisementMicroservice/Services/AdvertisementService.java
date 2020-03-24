@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertisement;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.AdvertisementStatus;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AdvFilters;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.SubjectModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.AdvertisementRepository;
 
 @Service
@@ -28,7 +30,20 @@ public class AdvertisementService {
 		return advRep.save(adv);
 	}
 	
-	
+	public List<Advertisement> filterAdvertisement(AdvFilters filters)
+	{
+		List<Advertisement> advs=this.findAll();
+		
+	    List<SubjectModel> unchechkedSubjects=filters.getSubjects().stream().filter(s->s.isChecked()==false)
+	    		.collect(Collectors.toList());
+	    advs=advs.stream()
+	    		.filter(adv->adv.getAdvertisementName().toLowerCase().contains(filters.getSearchRow().toLowerCase()))
+	    		.filter(adv->unchechkedSubjects.stream().noneMatch(sub->sub.getName().equals(adv.getSection())))
+	    		.filter(adv->adv.getBudget()>filters.getMinPrice() && adv.getBudget()<filters.getMaxPrice())
+	    .collect(Collectors.toList());
+	    
+	    return advs;
+	}
 	public List<Advertisement> getAdvertisementsByAuthorId(Long id)
 	{
 		return advRep.findByAuthorId(id);

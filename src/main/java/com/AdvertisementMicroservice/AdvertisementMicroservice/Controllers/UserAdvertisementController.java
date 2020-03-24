@@ -1,13 +1,10 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Controllers;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertisement;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.AdvertisementStatus;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.AdvertisementRepository;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.UserAdvertisements;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.AdvertisementService;
 
 @RestController
@@ -31,10 +28,10 @@ public class UserAdvertisementController {
 	}
 	
 	
-	@GetMapping("getAdvertisement/{id}/{status}")
-	public List<Advertisement> getAdvByIdAndStatus(@PathVariable Long id,@PathVariable AdvertisementStatus status)
+	@PostMapping("getStudentAdvertisements")
+	public List<Advertisement> getAdvByIdAndStatus(@RequestBody UserAdvertisements userAdvs)
 	{
-		return advService.getAdvByAuthorIdAndStatus(id, status);
+		return advService.getAdvByAuthorIdAndStatus(userAdvs.getUserId(), userAdvs.getStatus());
 	}
 	
 }

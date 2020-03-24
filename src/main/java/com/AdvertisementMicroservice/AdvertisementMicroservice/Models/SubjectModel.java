@@ -1,9 +1,25 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 public class SubjectModel {
 	private String name;
 	private String translateName;
 	private String url;
+	private boolean isChecked;
+	
+	
+	
+	@JsonGetter("isChecked")
+	public boolean isChecked() {
+		return isChecked;
+	}
+	
+	@JsonSetter("isChecked")
+	public void setIsChecked(boolean isChecked) {
+		this.isChecked = isChecked;
+	}
 	public String getName() {
 		return name;
 	}

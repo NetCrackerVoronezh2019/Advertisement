@@ -30,7 +30,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
         .csrf().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
-        .authorizeRequests()    
+        .authorizeRequests() 
+        .antMatchers("/**").permitAll()
         .anyRequest().authenticated()
         .and()
 		 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

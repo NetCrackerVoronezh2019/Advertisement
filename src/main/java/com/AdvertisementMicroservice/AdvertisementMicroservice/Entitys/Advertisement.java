@@ -36,7 +36,7 @@ public class Advertisement {
 	private String description;
 	
 	@Column(name="BUDGET")
-	private String budget;
+	private Integer budget;
 	
 	@Column(name="DATEOFPUBLICATION")
 	@JsonProperty(access=Access.READ_ONLY)
@@ -112,11 +112,11 @@ public class Advertisement {
 		this.description = description;
 	}
 
-	public String getBudget() {
+	public Integer getBudget() {
 		return budget;
 	}
 
-	public void setBudget(String budget) {
+	public void setBudget(Integer budget) {
 		this.budget = budget;
 	}
 
