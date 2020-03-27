@@ -26,6 +26,10 @@ public class Advertisement {
 	@Enumerated(EnumType.STRING) 
 	private AdvertisementStatus status;
 	
+	@Column(name="TYPE")
+	@Enumerated(EnumType.STRING)
+	private AdvertisementType type;
+	
 	@Column(name="SECTION")
 	private String section;
 	
@@ -143,7 +147,12 @@ public class Advertisement {
 	public void setAuthorId(Long authorId) {
 		this.authorId = authorId;
 	}
-	
-	
-	
+
+	public AdvertisementType getType() {
+		return type;
+	}
+
+	public void setType(AdvertisementType type) {
+		this.type = type;
+	}
 }

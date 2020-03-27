@@ -1,18 +1,28 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 
 import java.util.List;
+
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.AdvertisementType;
 public class AdvFilters {
 
 	private List<SubjectModel> subjects;
 	private Integer minPrice;
 	private Integer maxPrice;
 	private String searchRow;
+	private AdvertisementType type;
 	
 	
+	
+	
+	public AdvertisementType getType() {
+		return type;
+	}
+	public void setType(AdvertisementType type) {
+		this.type = type;
+	}
 	public Integer getMinPrice() {
 		return minPrice;
 	}
-
 	public void setMinPrice(Integer minPrice) {
 		if(minPrice==null)
 			this.minPrice=Integer.MIN_VALUE;

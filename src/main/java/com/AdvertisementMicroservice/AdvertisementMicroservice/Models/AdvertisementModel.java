@@ -2,13 +2,16 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 
 import java.time.LocalDateTime;
 
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 public class AdvertisementModel {
 	
 	private Long advertisementId;
 	private Long authorId;
+	private String authorRole;
 	private String advertisementName;
 	private LocalDateTime deadline;
 	private String description;
@@ -17,8 +20,12 @@ public class AdvertisementModel {
 	private String section;
 	private String content;
 	
-	
-	
+	public String getAuthorRole() {
+		return authorRole;
+	}
+	public void setAuthorRole(String authorRole) {
+		this.authorRole = authorRole;
+	}
 	public String getContent() {
 		return content;
 	}
@@ -44,12 +51,12 @@ public class AdvertisementModel {
 		this.advertisementName = advertisementName;
 	}
 	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+	
 	public LocalDateTime getDeadline() {
 		return deadline;
 	}
 	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	public void setDeadline(LocalDateTime deadline) {
 		this.deadline = deadline;
 	}

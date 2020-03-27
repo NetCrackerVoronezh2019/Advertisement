@@ -25,6 +25,11 @@ public class AdvertisementService {
 	}
 	
 	
+	public Boolean is(Long userId,Long advId)
+	{
+		return this.advRep.findById(advId).get().getAuthorId()==userId;
+	}
+	
 	public Advertisement save(Advertisement adv)
 	{
 		return advRep.save(adv);
@@ -37,6 +42,7 @@ public class AdvertisementService {
 	    List<SubjectModel> unchechkedSubjects=filters.getSubjects().stream().filter(s->s.isChecked()==false)
 	    		.collect(Collectors.toList());
 	    advs=advs.stream()
+	    		.filter(adv->adv.getType()==filters.getType())
 	    		.filter(adv->adv.getAdvertisementName().toLowerCase().contains(filters.getSearchRow().toLowerCase()))
 	    		.filter(adv->unchechkedSubjects.stream().noneMatch(sub->sub.getName().equals(adv.getSection())))
 	    		.filter(adv->adv.getBudget()>filters.getMinPrice() && adv.getBudget()<filters.getMaxPrice())
