@@ -24,19 +24,11 @@ public class AdvertisementController {
 	@Autowired
 	private AdvertisementService advertisementService;
 		
-	@PostMapping("isUserAdvertisement")
-	public ResponseEntity<?> isUserAdv(@RequestBody IsUserAdvertisementModel model)
-	{
-		if(this.advertisementService.is(model.userId, model.advertisementId))
-			return new ResponseEntity<>(null,HttpStatus.OK);
-		return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-	}
 	
 	@PostMapping("filterAdvertisements")
 	public ResponseEntity<List<Advertisement>> filterAdvertisements(@RequestBody AdvFilters advFilters)
 	{
 		List<Advertisement> advs=this.advertisementService.filterAdvertisement(advFilters);
-		System.out.println(advs.size());
 		return new ResponseEntity<>(advs,HttpStatus.OK);
 		
 	}

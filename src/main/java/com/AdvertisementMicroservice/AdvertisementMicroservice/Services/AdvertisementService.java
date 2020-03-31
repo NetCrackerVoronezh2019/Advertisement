@@ -65,10 +65,12 @@ public class AdvertisementService {
 	{
 		return advRep.findById(id).get();
 	}
-	public List<Advertisement> getAdvertisementsByTeacherId(Long id)
+	/*public List<Advertisement> getAdvertisementsByTeacherId(Long id)
 	{
 		return advRep.findByTeacherId(id);
 	}
+	
+	*/
 	
 	public List<Advertisement> getAdvByAuthorIdAndStatus(Long id,AdvertisementStatus status)
 	{

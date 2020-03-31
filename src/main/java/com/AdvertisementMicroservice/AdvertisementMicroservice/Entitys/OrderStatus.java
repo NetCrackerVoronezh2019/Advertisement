@@ -1,7 +1,7 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys;
 
-public enum AdvertisementStatus {
-	ACTIVE,
-	DELETED,
-	ARCHIVED
+public enum OrderStatus {
+	
+	INPROGRESS,
+	СOMPLETED
 }

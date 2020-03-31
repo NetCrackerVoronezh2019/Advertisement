@@ -2,13 +2,7 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys;
 
 import java.time.LocalDateTime;
 import javax.persistence.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.SubjectService;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 
@@ -55,10 +49,6 @@ public class Advertisement {
 	@Column(name="AUTHORID")
 	private Long authorId;
 	
-	@Column(name="TEACHER_ID")
-	private Long teacherId;
-	
-	
 	
 	public AdvertisementStatus getStatus() {
 		return status;
@@ -66,14 +56,6 @@ public class Advertisement {
 
 	public void setStatus(AdvertisementStatus status) {
 		this.status = status;
-	}
-
-	public Long getTeacherId() {
-		return teacherId;
-	}
-
-	public void setTeacherId(Long teacherId) {
-		this.teacherId = teacherId;
 	}
 
 	public String getSection() {
