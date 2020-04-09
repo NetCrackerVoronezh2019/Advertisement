@@ -28,23 +28,36 @@ public class Notification {
 	
 	@Column(name="STATUS")
 	@Enumerated(EnumType.STRING)
-	private NotificationResponseStatus status;
+	private NotificationStatus status;
 	
 	
+	@Column(name="RESPONSESTATUS")
+	@Enumerated(EnumType.STRING)
+	private NotificationResponseStatus responseStatus;
+	
+	
+	public NotificationStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(NotificationStatus status) {
+		this.status = status;
+	}
+
+	public NotificationResponseStatus getResponseStatus() {
+		return responseStatus;
+	}
+
+	public void setResponseStatus(NotificationResponseStatus responseStatus) {
+		this.responseStatus = responseStatus;
+	}
+
 	public String getAdvertisementName() {
 		return advertisementName;
 	}
 
 	public void setAdvertisementName(String advertisementName) {
 		this.advertisementName = advertisementName;
-	}
-
-	public NotificationResponseStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(NotificationResponseStatus status) {
-		this.status = status;
 	}
 
 	public Long getNotificationId() {

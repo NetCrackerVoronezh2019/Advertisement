@@ -19,7 +19,22 @@ public class AdvertisementModel {
 	private Integer budget;
 	private String section;
 	private String content;
+	private Tag[] tags;
+	private String[] allFiles;
 	
+	
+	public String[] getAllFiles() {
+		return allFiles;
+	}
+	public void setAllFiles(String[] allFiles) {
+		this.allFiles = allFiles;
+	}
+	public Tag[] getTags() {
+		return tags;
+	}
+	public void setTags(Tag[] tags) {
+		this.tags = tags;
+	}
 	public String getAuthorRole() {
 		return authorRole;
 	}

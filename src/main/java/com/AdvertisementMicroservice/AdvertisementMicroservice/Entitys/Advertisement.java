@@ -2,6 +2,9 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys;
 
 import java.time.LocalDateTime;
 import javax.persistence.*;
+
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.Tag;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -43,13 +46,83 @@ public class Advertisement {
 	@Column(name="DEADLINE")
 	private LocalDateTime deadline;
 	
-	@Column(name="IMAGEKEY")
-	private String imageKey;
+	@Column(name="IMAGEKEYS")
+	private String imageKeys;
 	
 	@Column(name="AUTHORID")
 	private Long authorId;
 	
+	@Column(name="TAGS")
+	private String tags;
 	
+	
+	
+	public void setTags(Tag[] tags)
+	{
+		String allTags=new String();	
+		for(Tag tag:tags)
+		{
+			allTags+=tag.name+",";
+		}
+		
+		this.setTags(allTags);
+	}
+	
+	@JsonGetter("tags")
+	public Tag[] getTagsArray()
+	{
+	   if(this.getTags()==null)
+		   return new Tag[0];
+	   String[] t=this.getTags().split(",");
+	   Tag[] tags=new Tag[t.length];
+	   for(int i=0; i<t.length;i++)
+	   {
+		   tags[i]=new Tag();
+		   tags[i].name=t[i];
+	   }
+	   return tags;   
+	}
+	
+	@JsonGetter("imageKeys")
+	public String[] getImageKeysArray()
+	{
+	   if(this.getImageKeys()==null)
+		   return new String[0];
+	   String[] t=this.getImageKeys().split(",");
+	   String[] keys=new String[t.length];
+	   for(int i=0; i<t.length;i++)
+	   {
+		   keys[i]=t[i];
+	   }
+	   return keys;   
+	}
+	
+	
+	public String[] setImageKeys(String[] images)
+	{
+		String imageKeys=new String();
+		String[] keys=new String[images.length];
+		String newKey;
+		for(int i=0;i<images.length;i++)
+		{
+			newKey="adv_"+this.getAdvertisementId()+"image_"+i;
+			keys[i]=newKey;
+			imageKeys+=newKey+",";
+			
+		}
+		this.setImageKeys(imageKeys);
+		return keys;
+	}
+	
+	
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
+	}
+
 	public AdvertisementStatus getStatus() {
 		return status;
 	}
@@ -62,12 +135,12 @@ public class Advertisement {
 		return section;
 	}
 	
-	public String getImageKey() {
-		return imageKey;
+	public String getImageKeys() {
+		return imageKeys;
 	}
 
-	public void setImageKey(String imageKey) {
-		this.imageKey = imageKey;
+	public void setImageKeys(String imageKeys) {
+		this.imageKeys = imageKeys;
 	}
 
 	public void setSection(String section) {

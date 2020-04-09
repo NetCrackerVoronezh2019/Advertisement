@@ -1,12 +1,13 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Services;
 
 import java.util.List;
-
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Notification;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.AdvertisementRepository;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationResponseStatus;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationStatus;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationType;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.NotificationRepository;
 
 @Service
@@ -20,6 +21,26 @@ public class NotificationService {
 		return notRep.findByAddresseeId(userId);
 	}
 	
+	
+	public void setAllNotificationsAsReaded(Long userId)
+	{
+		List<Notification> nots=notRep.findByAddresseeId(userId);
+		if(nots!=null)
+		{
+			List<Notification> n=nots.stream()
+				.filter(not->not.getStatus()==NotificationStatus.UNREADED)
+				.collect(Collectors.toList());
+			
+			for(Notification updatedNot:n)
+			{
+				updatedNot.setStatus(NotificationStatus.READED);
+				this.save(updatedNot);
+			}
+		}
+		
+		
+			
+	}
 	public void save(Notification not)
 	{
 		notRep.save(not);
@@ -28,5 +49,34 @@ public class NotificationService {
 	public Notification findBySenderIdAndAdvertisementId(Long id1,Long id2)
 	{
 		return notRep.findBySenderIdAndAdvertisementId(id1, id2);
+	}
+	
+	public Notification generateResponseNotification(Notification notif)
+	{
+		Notification newNotif=new Notification();
+		newNotif.setAddresseeId(notif.getSenderId());
+		newNotif.setSenderId(notif.getAddresseeId());
+		newNotif.setAdvertisementId(notif.getAdvertisementId());
+		newNotif.setStatus(NotificationStatus.UNREADED);
+		newNotif.setResponseStatus(NotificationResponseStatus.UNREADED);
+		newNotif.setAdvertisementName(notif.getAdvertisementName());
+		if(notif.getType()==NotificationType.TAKE_ADVERTISEMENT)
+		{
+			if(notif.getResponseStatus()==NotificationResponseStatus.ACCEPTED)
+				newNotif.setType(NotificationType.ACCEPTED_TAKE_ADVERTISEMENT);
+			if(notif.getResponseStatus()==NotificationResponseStatus.REJECTED)
+				newNotif.setType(NotificationType.REJECTED_TAKE_ADVERTISEMENT);
+		}
+		else
+		{
+			if(notif.getType()==NotificationType.RECEIVE_SERVICE)
+			{
+				if(notif.getResponseStatus()==NotificationResponseStatus.ACCEPTED)
+					newNotif.setType(NotificationType.ACCEPTED_RECEIVE_SERVICE);
+				if(notif.getResponseStatus()==NotificationResponseStatus.REJECTED)
+					newNotif.setType(NotificationType.REJECTED_RECEIVE_SERVICE);
+			}
+		}
+		return newNotif;
 	}
 }

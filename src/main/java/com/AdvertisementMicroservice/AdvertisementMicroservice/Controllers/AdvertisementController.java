@@ -70,27 +70,41 @@ public class AdvertisementController {
 	}
 	
 	@PostMapping("addAdvertisement")
-	public ResponseEntity<String> addnewAdvertisement(@RequestBody AdvertisementModel adv) throws IOException
+	public ResponseEntity<Boolean> addnewAdvertisement(@RequestBody AdvertisementModel adv) throws IOException
 	{
 		
 		adv.setDateOfPublication(LocalDateTime.now());
 		Advertisement advertisement=ModelUtils.AdvertisementModelToEntity(adv);
 		advertisement.setStatus(AdvertisementStatus.ACTIVE);
 		advertisement=advertisementService.save(advertisement);
-		advertisement.setImageKey("adv_"+advertisement.getAdvertisementId()+"N_1");
+		advertisement.setTags(adv.getTags());
 		if(adv.getAuthorRole().equals("ROLE_STUDENT"))
 			advertisement.setType(AdvertisementType.ORDER);
 		else
 			advertisement.setType(AdvertisementType.FREELANCE);
+		advertisement=advertisementService.save(advertisement);
+		String[] keys=advertisement.setImageKeys(adv.getAllFiles());
 		advertisementService.save(advertisement);
-		AmazonModel model=new AmazonModel();
-		model.setContent(adv.getContent());
-		model.setKey(advertisement.getImageKey());
-		
-	    HttpEntity<AmazonModel> requestEntity =new HttpEntity<>(model);
-		RestTemplate restTemplate = new RestTemplate();
-	    ResponseEntity<String> res=restTemplate.exchange("http://localhost:1234/uploadFile",HttpMethod.POST,requestEntity,String.class);
-		return new ResponseEntity<>("OK",HttpStatus.OK);
+	
+		if(keys.length!=0)
+		{
+			AmazonModels amazon=new AmazonModels(keys.length);
+			for(int i=0;i<keys.length;i++)
+			{
+				amazon.allFiles[i]=new AmazonModel(keys[i],adv.getAllFiles()[i]);
+			}
+			 HttpEntity<AmazonModels> requestEntity =new HttpEntity<>(amazon);
+			 RestTemplate restTemplate = new RestTemplate();
+			 try 
+			 {
+			    ResponseEntity<Object> res=restTemplate.exchange("http://localhost:1234/uploadAdvertisementFiles",HttpMethod.POST,requestEntity,Object.class);
+			 }
+			catch(Exception ex)
+			{
+					
+			}
+		}
+		return new ResponseEntity<>(true,HttpStatus.OK);
 		
 	}
 		

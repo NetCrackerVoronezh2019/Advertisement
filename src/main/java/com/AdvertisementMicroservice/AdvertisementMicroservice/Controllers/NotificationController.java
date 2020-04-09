@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertisement;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Notification;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationResponseStatus;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationStatus;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationType;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
@@ -30,6 +31,15 @@ public class NotificationController {
 	@Autowired
 	private OrderService orderService;
 	
+	
+	
+	@GetMapping("setNotificatiosAsReaded/{userId}")
+	public ResponseEntity<?> setNotificationsAsReaded(@PathVariable Long userId)
+	{
+		notifService.setAllNotificationsAsReaded(userId);
+		return new ResponseEntity<>(null,HttpStatus.OK);
+	}
+	
 	@PostMapping("canSendRequest")
 	public ResponseEntity<?> canSendRequest(@RequestBody SendAdvertisementNotificationModel model)
 	{
@@ -42,7 +52,8 @@ public class NotificationController {
 	@PostMapping("newNotification")
 	public ResponseEntity<?> newNotification(@RequestBody Notification notif)
 	{
-		notif.setStatus(NotificationResponseStatus.UNREADED);
+		notif.setStatus(NotificationStatus.UNREADED);
+		notif.setResponseStatus(NotificationResponseStatus.UNREADED);
 		System.out.println("name "+notif.getAdvertisementName());
 		notifService.save(notif);
 		return new ResponseEntity<>(null,HttpStatus.OK);
@@ -52,8 +63,18 @@ public class NotificationController {
 	public ResponseEntity<List<Notification>> getMyAllNotifications(@PathVariable Long userId)
 	{   
 		return new ResponseEntity<>(notifService.getMyAllNotifications(userId).stream()
-				.filter(n->n.getStatus()==NotificationResponseStatus.UNREADED)
+				.filter(n->n.getResponseStatus()==NotificationResponseStatus.UNREADED)
 				.collect(Collectors.toList())
+				,HttpStatus.OK);
+		
+	}
+	
+	@GetMapping("getMyAllNotificationsSize/{userId}")
+	public ResponseEntity<Integer> getMyAllNotificationsSize(@PathVariable Long userId)
+	{   
+		return new ResponseEntity<>(notifService.getMyAllNotifications(userId).stream()
+				.filter(n->n.getStatus()==NotificationStatus.UNREADED)
+				.collect(Collectors.toList()).size()
 				,HttpStatus.OK);
 		
 	}
@@ -62,35 +83,18 @@ public class NotificationController {
 	public ResponseEntity<?> notificationResponse(@RequestBody Notification notif) 
 	{
 		Notification newNotif=new Notification();
-		if(notif.getType()==NotificationType.TAKE_ADVERTISEMENT)
+		notif.setStatus(NotificationStatus.READED);
+		if(notif.getResponseStatus()==NotificationResponseStatus.ACCEPTED)
 		{
-			if(notif.getStatus()==NotificationResponseStatus.ACCEPTED)
-			{
-				newNotif.setType(NotificationType.ACCEPTED_TAKE_ADVERTISEMENT);
-				newNotif.setAddresseeId(notif.getSenderId());
-				newNotif.setSenderId(notif.getAddresseeId());
-				newNotif.setAdvertisementId(notif.getAdvertisementId());
-				newNotif.setStatus(NotificationResponseStatus.UNREADED);
-				newNotif.setAdvertisementName(notif.getAdvertisementName());
-				Order order=new Order();
-				order.setCustomerId(notif.getAddresseeId());
-				order.setFreelancerId(notif.getSenderId());
-				order.setStatus(OrderStatus.INPROGRESS);
-				order.setAdvertisementId(notif.getAdvertisementId());
-				order.setAdvertisementName(notif.getAdvertisementName());
-				notifService.save(newNotif);
-				orderService.save(order);
-			}
-			if(notif.getStatus()==NotificationResponseStatus.REJECTED)
-			{
-				newNotif.setType(NotificationType.REJECTED_TAKE_ADVERTISEMENT);
-				newNotif.setAddresseeId(notif.getSenderId());
-				newNotif.setSenderId(notif.getAddresseeId());
-				newNotif.setAdvertisementId(notif.getAdvertisementId());
-				newNotif.setStatus(NotificationResponseStatus.UNREADED);
-				newNotif.setAdvertisementName(notif.getAdvertisementName());
-				notifService.save(newNotif);
-			}
+			newNotif=notifService.generateResponseNotification(notif);
+			Order order=orderService.generateOrder(notif);
+			notifService.save(newNotif);
+			orderService.save(order);
+		}
+		if(notif.getResponseStatus()==NotificationResponseStatus.REJECTED)
+		{
+			newNotif=notifService.generateResponseNotification(notif);
+			notifService.save(newNotif);
 		}
 		notifService.save(notif);		
 		return new ResponseEntity<>(null,HttpStatus.OK);

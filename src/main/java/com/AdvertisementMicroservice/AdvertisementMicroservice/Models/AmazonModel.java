@@ -6,6 +6,11 @@ public class AmazonModel {
 	private String content;
 	private String bucket;
 	
+	public AmazonModel(String key,String content)
+	{
+		this.key=key;
+		this.content=content;
+	}
 	public String getKey() {
 		return key;
 	}
