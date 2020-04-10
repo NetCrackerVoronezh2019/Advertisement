@@ -3,6 +3,7 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 import java.util.List;
 
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.AdvertisementType;
+
 public class AdvFilters {
 
 	private List<SubjectModel> subjects;
@@ -10,10 +11,17 @@ public class AdvFilters {
 	private Integer maxPrice;
 	private String searchRow;
 	private AdvertisementType type;
+	private List<Tag> tags;
 	
 	
 	
 	
+	public List<Tag> getTags() {
+		return tags;
+	}
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
+	}
 	public AdvertisementType getType() {
 		return type;
 	}

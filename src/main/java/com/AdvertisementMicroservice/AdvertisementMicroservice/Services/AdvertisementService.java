@@ -1,6 +1,9 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Services;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertise
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.AdvertisementStatus;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AdvFilters;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.SubjectModel;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.Tag;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.AdvertisementRepository;
 
 @Service
@@ -48,7 +52,35 @@ public class AdvertisementService {
 	    		.filter(adv->adv.getBudget()>filters.getMinPrice() && adv.getBudget()<filters.getMaxPrice())
 	    .collect(Collectors.toList());
 	    
-	    return advs;
+	    return filterByTags(advs,filters);
+	}
+	
+	
+	private List<Advertisement> filterByTags(List<Advertisement> advs,AdvFilters filters)
+	{
+
+		List<Advertisement> advertisements=new ArrayList<Advertisement>();
+		if(filters.getTags().size()==0)
+			return advs;
+		
+		for(Advertisement adv:advs)
+		{	
+			List<Tag> advTags=Arrays.asList(adv.getTagsArray());
+			
+			if(advTags!=null)
+			{	
+				System.out.println(advTags);
+				for(Tag tag:filters.getTags())
+				{
+					if(advTags.stream().anyMatch(t->t.name.equals(tag.name)))
+					{
+						advertisements.add(adv);
+						break;
+					}
+				}
+			}
+		}
+		return advertisements;
 	}
 	public List<Advertisement> getAdvertisementsByAuthorId(Long id)
 	{
