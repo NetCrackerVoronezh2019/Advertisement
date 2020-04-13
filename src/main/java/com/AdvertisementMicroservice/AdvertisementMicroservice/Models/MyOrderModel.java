@@ -2,20 +2,27 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 
 public class MyOrderModel {
 
-	private String roleName;
-	private Long id;
-	
-	public String getRoleName() {
-		return roleName;
+	public String role;
+	public Long myId;
+	public Long orderId;
+	public String getRole() {
+		
+		return role;
 	}
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
+	public void setRole(String role) {
+		this.role = role;
 	}
-	public Long getId() {
-		return id;
+	public Long getMyId() {
+		return myId;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setMyId(Long myId) {
+		this.myId = myId;
+	}
+	public Long getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
 	}
 	
 	

@@ -1,6 +1,7 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,11 @@ public class OrderService {
 		return orderRep.findByCustomerId(id);
 	}
 	
+	public Optional<Order> findByOrder(Long id)
+	{
+		return orderRep.findById(id);
+	}
+	
 	public List<Order> findByFreelancerId(Long id)
 	{
 		return orderRep.findByFreelancerId(id);
@@ -35,7 +41,7 @@ public class OrderService {
 	public Order generateOrder(Notification notif)
 	{
 		Order order=new Order();
-		order.setStatus(OrderStatus.INPROGRESS);
+		order.setStatus(OrderStatus.ACCEPTED);
 		order.setAdvertisementId(notif.getAdvertisementId());
 		order.setAdvertisementName(notif.getAdvertisementName());
 		

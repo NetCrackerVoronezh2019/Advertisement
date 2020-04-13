@@ -28,10 +28,19 @@ public class Order {
 	@Column(name="STATUS")
 	@Enumerated(EnumType.STRING)
 	private OrderStatus status;
+	
+	@Column(name="STARSFORWORK")
+	private double starsForWork;
 
 	
-	
-	
+	public double getStarsForWork() {
+		return starsForWork;
+	}
+
+	public void setStarsForWork(double starsForWork) {
+		this.starsForWork = starsForWork;
+	}
+
 	public String getAdvertisementName() {
 		return advertisementName;
 	}

@@ -16,6 +16,9 @@ public class Notification {
 	@Column(name="ADVERTISEMENTID")
 	private Long advertisementId;
 	
+	@Column(name="ORDERID")
+	private Long orderId;
+	
 	@Column(name="ADVERTISEMENTNAME")
 	private String advertisementName;
 	
@@ -70,6 +73,14 @@ public class Notification {
 
 	public Long getAdvertisementId() {
 		return advertisementId;
+	}
+
+	public Long getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
 	}
 
 	public void setAdvertisementId(Long advertisementId) {

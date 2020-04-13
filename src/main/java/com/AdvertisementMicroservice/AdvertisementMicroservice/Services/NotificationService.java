@@ -8,6 +8,9 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Notificat
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationResponseStatus;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationStatus;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationType;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeOrderStatusModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.NotificationRepository;
 
 @Service
@@ -15,6 +18,8 @@ public class NotificationService {
 	
 	@Autowired 
 	private NotificationRepository notRep;
+	
+	@Autowired OrderService orderService;
 	
 	public List<Notification> getMyAllNotifications(Long userId)
 	{
@@ -79,4 +84,38 @@ public class NotificationService {
 		}
 		return newNotif;
 	}
+	
+	
+	public Notification generateOrderNotification(ChangeOrderStatusModel model)
+	{	
+		Notification n=new Notification();
+		if(model.getOrderStatus()==OrderStatus.INPROGRESS)
+		{
+			n.setType(NotificationType.CHANGE_ORDER_STATUS_TO_INPROGRESS);
+			n.setStatus(NotificationStatus.UNREADED);
+			n.setResponseStatus(NotificationResponseStatus.UNREADED);
+			Order order=orderService.findByOrder(model.getOrderId()).get();
+			n.setAddresseeId(order.getCustomerId());
+			n.setSenderId(order.getFreelancerId());
+			n.setAdvertisementId(order.getAdvertisementId());
+			n.setOrderId(model.getOrderId());
+			
+			return n;
+		}
+		if(model.getOrderStatus()==OrderStatus.СOMPLETED)
+		{
+			n.setType(NotificationType.CHANGE_ORDER_STATUS_TO_COMPLETED);
+			n.setStatus(NotificationStatus.UNREADED);
+			n.setResponseStatus(NotificationResponseStatus.UNREADED);
+			Order order=orderService.findByOrder(model.getOrderId()).get();
+			n.setAddresseeId(order.getCustomerId());
+			n.setSenderId(order.getFreelancerId());
+			n.setAdvertisementId(order.getAdvertisementId());
+			n.setOrderId(model.getOrderId());
+			return n;
+		}
+							
+		return null;
+	}
+	
 }
