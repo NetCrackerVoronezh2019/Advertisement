@@ -1,9 +1,14 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
+import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +24,8 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeOrde
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeRatingModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.MyOrderModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.MyOrdersModel;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.RatingNot;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.OrderRepository;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.NotificationService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderService;
 
@@ -29,8 +36,30 @@ public class OrderController {
 	@Autowired
 	private OrderService orderService;
 	
+	@Autowired OrderRepository o;
+	
 	@Autowired 
 	private NotificationService notService;
+	
+	@PostMapping("getAccessibleStatuses")
+	public ResponseEntity<List<OrderStatus>> getAccessibleStatuses(@RequestBody @NotNull Order orderModel)
+	{
+	   List<OrderStatus> orderStatusList = Arrays.asList(OrderStatus.values());
+		orderStatusList=orderStatusList.stream().
+						filter(s->s.getStatusWeight()>=orderModel.getStatus().getStatusWeight())
+						.collect(Collectors.toList());
+		
+		return new ResponseEntity<>(orderStatusList,HttpStatus.OK);
+	}
+	
+	@GetMapping("rating/{freelancerId}")
+	public  ResponseEntity<Double> getRaiting(@PathVariable Long freelancerId)
+	{
+		Optional<Double> rating=this.o.findAllRaitings(freelancerId);
+		if(rating.isPresent())
+			return new ResponseEntity<>(rating.get(),HttpStatus.OK);
+		return new ResponseEntity<>(null,HttpStatus.OK);
+	}
 	
 	@PostMapping("getMyOrders")
 	public ResponseEntity<List<Order>> getMyOrders(@RequestBody MyOrdersModel model)
@@ -45,19 +74,23 @@ public class OrderController {
 	
 	
 	@PostMapping("changeRating")
-	public ResponseEntity<?> changeRating(@RequestBody ChangeRatingModel model)
+	public ResponseEntity<?> changeRating(@RequestBody RatingNot model)
 	{
-		Order order=orderService.findByOrder(model.getOrderId()).get();
-		order.setStarsForWork(model.getReiting());
+		Notification notif=model.getNotif();
+		Order order=orderService.findByOrder(notif.getOrderId()).get();
+		order.setStarsForWork(model.getRating());
+		notif.setResponseStatus(NotificationResponseStatus.ESTIMATED);
 		orderService.save(order);
+		this.notService.save(notif);
+		
 		Notification not=new Notification();
-		not.setSenderId(model.getCustomerId());
-		not.setAddresseeId(model.getFreelancerId());
+		not.setSenderId(notif.getAddresseeId());
+		not.setAddresseeId(notif.getSenderId());
 		not.setStatus(NotificationStatus.UNREADED);
 		not.setResponseStatus(NotificationResponseStatus.UNREADED);
 		not.setType(NotificationType.CHANGE_REITING);
-		not.setOrderId(model.getOrderId());
-		not.setAdvertisementId(model.getAdvertisementId());
+		not.setOrderId(notif.getOrderId());
+		not.setAdvertisementId(notif.getAdvertisementId());
 		notService.save(not);
 		return new ResponseEntity<>(null,HttpStatus.OK);
 		
