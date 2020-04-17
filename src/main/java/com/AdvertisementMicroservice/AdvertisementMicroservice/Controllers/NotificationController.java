@@ -41,7 +41,7 @@ public class NotificationController {
 	}
 	
 	@PostMapping("canSendRequest")
-	public ResponseEntity<?> canSendRequest(@RequestBody SendAdvertisementNotificationModel model)
+	public ResponseEntity<Boolean> canSendRequest(@RequestBody SendAdvertisementNotificationModel model)
 	{
 		Notification not=notifService.findBySenderIdAndAdvertisementId(model.getSenderId(),model.getAdvertisementId());
 		if(not!=null)

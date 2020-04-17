@@ -86,32 +86,32 @@ public class NotificationService {
 	}
 	
 	
-	public Notification generateOrderNotification(ChangeOrderStatusModel model)
+	public Notification generateOrderNotification(OrderStatus status,Long orderId)
 	{	
 		Notification n=new Notification();
-		if(model.getOrderStatus()==OrderStatus.INPROGRESS)
+		if(status==OrderStatus.INPROGRESS)
 		{
 			n.setType(NotificationType.CHANGE_ORDER_STATUS_TO_INPROGRESS);
 			n.setStatus(NotificationStatus.UNREADED);
 			n.setResponseStatus(NotificationResponseStatus.UNREADED);
-			Order order=orderService.findByOrder(model.getOrderId()).get();
+			Order order=orderService.findByOrder(orderId).get();
 			n.setAddresseeId(order.getCustomerId());
 			n.setSenderId(order.getFreelancerId());
 			n.setAdvertisementId(order.getAdvertisementId());
-			n.setOrderId(model.getOrderId());
+			n.setOrderId(orderId);
 			
 			return n;
 		}
-		if(model.getOrderStatus()==OrderStatus.СOMPLETED)
+		if(status==OrderStatus.СOMPLETED)
 		{
 			n.setType(NotificationType.CHANGE_ORDER_STATUS_TO_COMPLETED);
 			n.setStatus(NotificationStatus.UNREADED);
 			n.setResponseStatus(NotificationResponseStatus.UNREADED);
-			Order order=orderService.findByOrder(model.getOrderId()).get();
+			Order order=orderService.findByOrder(orderId).get();
 			n.setAddresseeId(order.getCustomerId());
 			n.setSenderId(order.getFreelancerId());
 			n.setAdvertisementId(order.getAdvertisementId());
-			n.setOrderId(model.getOrderId());
+			n.setOrderId(orderId);
 			return n;
 		}
 							

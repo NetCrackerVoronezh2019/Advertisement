@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
@@ -24,7 +25,9 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeOrde
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeRatingModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.MyOrderModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.MyOrdersModel;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.OrderModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.RatingNot;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.isMyOrderModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.OrderRepository;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.NotificationService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderService;
@@ -41,16 +44,7 @@ public class OrderController {
 	@Autowired 
 	private NotificationService notService;
 	
-	@PostMapping("getAccessibleStatuses")
-	public ResponseEntity<List<OrderStatus>> getAccessibleStatuses(@RequestBody @NotNull Order orderModel)
-	{
-	   List<OrderStatus> orderStatusList = Arrays.asList(OrderStatus.values());
-		orderStatusList=orderStatusList.stream().
-						filter(s->s.getStatusWeight()>=orderModel.getStatus().getStatusWeight())
-						.collect(Collectors.toList());
-		
-		return new ResponseEntity<>(orderStatusList,HttpStatus.OK);
-	}
+
 	
 	@GetMapping("rating/{freelancerId}")
 	public  ResponseEntity<Double> getRaiting(@PathVariable Long freelancerId)
@@ -61,17 +55,42 @@ public class OrderController {
 		return new ResponseEntity<>(null,HttpStatus.OK);
 	}
 	
+	@PostMapping("haveIOrder")
+	public ResponseEntity<OrderModel> haveIOrder(@RequestBody @Valid isMyOrderModel model)
+	{
+		Long advId=model.getAdvertisementId();
+		Optional<Order> optionalOrder =orderService.findByAdvertisementId(advId);
+		if(optionalOrder.isEmpty())
+			return new ResponseEntity<>(null,HttpStatus.OK);
+		Order order=optionalOrder.get();
+		OrderModel orderModel=OrderModel.orderToOrderModel(order);
+		if(orderModel.getFreelancerId().equals(model.getUserId()))
+			return new ResponseEntity<>(orderModel,HttpStatus.OK);
+		else
+			return new ResponseEntity<>(null,HttpStatus.OK);
+		
+	}
+	
 	@PostMapping("getMyOrders")
-	public ResponseEntity<List<Order>> getMyOrders(@RequestBody MyOrdersModel model)
+	public ResponseEntity<List<OrderModel>> getMyOrders(@RequestBody MyOrdersModel model)
 	{
 		List<Order> orders=new ArrayList<Order>();
 		if(model.getRoleName().equals("ROLE_STUDENT"))
 			orders=orderService.findByCustomerId(model.getId());
 		if(model.getRoleName().equals("ROLE_TEACHER"))
 			orders=orderService.findByFreelancerId(model.getId());
-		return new ResponseEntity<>(orders,HttpStatus.OK);
+		List<OrderModel> orderModels=OrderModel.orderListToModelList(orders);
+		return new ResponseEntity<>(orderModels,HttpStatus.OK);
 	}
 	
+	@GetMapping("getFreelancerOrders/{userId}")
+	public ResponseEntity<List<OrderModel>> getallOrders(@PathVariable Long userId)
+	{
+		List<Order> orders=new ArrayList<Order>();
+		orders=orderService.findByFreelancerId(userId);
+		List<OrderModel> orderModels=OrderModel.orderListToModelList(orders);
+		return new ResponseEntity<>(orderModels,HttpStatus.OK);
+	}
 	
 	@PostMapping("changeRating")
 	public ResponseEntity<?> changeRating(@RequestBody RatingNot model)
@@ -112,19 +131,19 @@ public class OrderController {
 	
 	
 	@PostMapping("changeOrderStatus")
-	public ResponseEntity<?> changeOrderStatus(@RequestBody ChangeOrderStatusModel model )
+	public ResponseEntity<Order> changeOrderStatus(@RequestBody ChangeOrderStatusModel model )
 	{
 		Optional<Order> order=orderService.findByOrder(model.getOrderId());
 		Order o=order.get();
 		if(model.getRoleName().equals("ROLE_TEACHER") )
 		{
-			if(o.getFreelancerId()==model.getUserId())
+			if(o.getFreelancerId().equals(model.getUserId()))
 			{
-				o.setStatus(model.getOrderStatus());
-				orderService.save(o);
-				Notification not=notService.generateOrderNotification(model);
+				o.setStatus(OrderModel.nextOrderStatus(o.getStatus()));
+				o=orderService.save(o);
+				Notification not=notService.generateOrderNotification(o.getStatus(),o.getOrderId());
 				notService.save(not);
-				return new ResponseEntity<>(null,HttpStatus.OK);
+				return new ResponseEntity<>(o,HttpStatus.OK);
 				
 			}
 			else
@@ -133,11 +152,11 @@ public class OrderController {
 		else
 			if(model.getRoleName().equals("ROLE_STUDENT"))
 			{
-				if(o.getCustomerId()==model.getOrderId())
+				if(o.getCustomerId().equals(model.getOrderId()))
 				{
-					o.setStatus(model.getOrderStatus());
+					o.setStatus(OrderModel.nextOrderStatus(o.getStatus()));;
 					orderService.save(o);
-					return new ResponseEntity<>(null,HttpStatus.OK);
+					return new ResponseEntity<>(o,HttpStatus.OK);
 				}
 			}
 		

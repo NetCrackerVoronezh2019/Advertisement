@@ -19,4 +19,7 @@ public interface OrderRepository  extends JpaRepository<Order,Long> {
 	@Query(value = "Select avg(starsforwork) from orders where starsforwork>0 and freelancerid=?1", 
 			  nativeQuery = true)
 	public Optional<Double> findAllRaitings(Long id);
+	
+	public Optional<Order> findAllByAdvertisementId(Long id);
+	
 }

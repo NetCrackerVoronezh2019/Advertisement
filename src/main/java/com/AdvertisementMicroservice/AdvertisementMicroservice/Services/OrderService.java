@@ -1,7 +1,9 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Services;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,14 +30,18 @@ public class OrderService {
 		return orderRep.findById(id);
 	}
 	
+	public Optional<Order> findByAdvertisementId(Long id)
+	{
+		return orderRep.findAllByAdvertisementId(id);
+	}
 	public List<Order> findByFreelancerId(Long id)
 	{
 		return orderRep.findByFreelancerId(id);
 	}
 	
-	public void save(Order order)
+	public Order save(Order order)
 	{
-		orderRep.save(order);
+		return orderRep.save(order);
 	}
 	
 	public Order generateOrder(Notification notif)
@@ -61,4 +67,7 @@ public class OrderService {
 		
 		return order;
 	}
+	
+	
+	
 }

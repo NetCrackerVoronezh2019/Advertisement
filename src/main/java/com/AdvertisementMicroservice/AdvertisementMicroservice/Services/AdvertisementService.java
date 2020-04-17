@@ -31,7 +31,9 @@ public class AdvertisementService {
 	
 	public Boolean is(Long userId,Long advId)
 	{
-		return this.advRep.findById(advId).get().getAuthorId()==userId;
+		Boolean b=this.advRep.findById(advId).get().getAuthorId().equals(userId);
+		System.out.println("BOOOOLEAN"+b+"ids"+userId+" "+advId);
+		return b;
 	}
 	
 	public Advertisement save(Advertisement adv)
