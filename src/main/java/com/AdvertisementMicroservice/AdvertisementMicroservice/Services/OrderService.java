@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStat
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.OrderRepository;
 
 @Service
+@Transactional
 public class OrderService {
 
 	@Autowired

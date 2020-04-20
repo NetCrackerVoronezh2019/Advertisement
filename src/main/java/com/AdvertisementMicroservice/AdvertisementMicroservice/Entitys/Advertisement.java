@@ -1,7 +1,10 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.*;
 
@@ -58,37 +61,29 @@ public class Advertisement {
 	@Column(name="TAGS")
 	private String tags;
 	
-	@Column(name="ATTACHMENTS")
-	private String attachmentsKeys;
 	
-	@JsonGetter("attachmentsKeys")
-	public String[] getAttachmentKeys()
-	{
-		return this.getAttachmentsKeys().split(",");
-	}
-	public String[] setAttachmentKeys(List<AmazonModel> keys)
-	{
-		String str="";
-		String[] arr=new String[keys.size()];
-		String newKey="";
-		for(int i=0;i<keys.size();i++)
-		{
-		  	newKey="adv"+this.getAdvertisementId()+"_"+keys.get(i).getName();
-		  	arr[i]=newKey;
-		  	str+=newKey+",";
-		}
+	 @OneToMany(mappedBy = "advertisement", fetch = FetchType.EAGER)
+	    private Collection<Attachment> attachments;
+	 
+	 
+	 @JsonGetter("attachments")
+	 public List<String> sendAttachmentsKeys(){
+		 Collection<Attachment> att=this.getAttachment();
+		 if(att==null)
+			 return new ArrayList<String>();
+		 List<String> list=att.stream()
+		 	.map(s->s.getKey())
+		 	.collect(Collectors.toList());
 		
-		this.setAttachmentsKeys(str);
-		return arr;
-	}
-	
-	
-	public String getAttachmentsKeys() {
-		return attachmentsKeys;
+		 	return list;
+		 
+	 }
+	public Collection<Attachment> getAttachment() {
+		return attachments;
 	}
 
-	public void setAttachmentsKeys(String attachmentsKeys) {
-		this.attachmentsKeys = attachmentsKeys;
+	public void setAttachments(Collection<Attachment> attachments) {
+		this.attachments = attachments;
 	}
 
 	public void setTags(Tag[] tags)
@@ -131,6 +126,22 @@ public class Advertisement {
 	   return keys;   
 	}
 	
+	
+	public String[] getAttachmentKeys(List<AmazonModel> keys)
+	{
+		String str="";
+		String[] arr=new String[keys.size()];
+		String newKey="";
+		for(int i=0;i<keys.size();i++)
+		{
+		  	newKey="adv"+this.getAdvertisementId()+"_"+keys.get(i).getName();
+		  	arr[i]=newKey;
+		  	str+=newKey+",";
+		}
+		
+		
+		return arr;
+	}
 	
 	public String[] setImageKeys(String[] images)
 	{

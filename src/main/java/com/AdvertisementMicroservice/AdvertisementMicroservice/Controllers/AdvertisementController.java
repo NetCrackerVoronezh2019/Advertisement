@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.*;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.*;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.AttachmentRepository;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.*;
 
 
@@ -20,6 +21,9 @@ public class AdvertisementController {
 	
 	@Autowired
 	private  SubjectService subjectService;
+	
+	@Autowired
+	private AttachmentService attachmentService;
 	
 	@Autowired
 	private AdvertisementService advertisementService;
@@ -69,6 +73,7 @@ public class AdvertisementController {
 		return new ResponseEntity<>(adv,HttpStatus.OK);
 	}
 	
+	
 	@PostMapping("addAdvertisement")
 	public ResponseEntity<Boolean> addnewAdvertisement(@RequestBody AdvertisementModel adv) throws IOException
 	{
@@ -83,7 +88,8 @@ public class AdvertisementController {
 		else
 			advertisement.setType(AdvertisementType.FREELANCE);
 		advertisement=advertisementService.save(advertisement);
-		String[] keys=advertisement.setAttachmentKeys(adv.getAllFiles());
+		
+		String[] keys=advertisement.getAttachmentKeys(adv.getAllFiles());
 		advertisementService.save(advertisement);
 	
 		if(keys.length!=0)
@@ -91,11 +97,15 @@ public class AdvertisementController {
 			AmazonModels amazon=new AmazonModels(keys.length);
 			for(int i=0;i<keys.length;i++)
 			{
-			
+				Attachment a=new Attachment();
+				a.setKey(keys[i]);
+				a.setAdvertisement(advertisement);
+				attachmentService.save(a);
 				AmazonModel m=adv.getAllFiles().get(i);
 				m.setKey(keys[i]);
 				amazon.allFiles[i]=m;
 			}
+			
 			 HttpEntity<AmazonModels> requestEntity =new HttpEntity<>(amazon);
 			 RestTemplate restTemplate = new RestTemplate();
 			 try 
@@ -104,11 +114,16 @@ public class AdvertisementController {
 			 }
 			catch(Exception ex)
 			{
-					
+				
+			
 			}
-		}
+			
+			
+		 }
+		 
 		return new ResponseEntity<>(true,HttpStatus.OK);
 		
 	}
+	
 		
 }
