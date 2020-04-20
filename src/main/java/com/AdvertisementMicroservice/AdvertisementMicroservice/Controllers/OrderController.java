@@ -29,6 +29,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.OrderModel
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.RatingNot;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.isMyOrderModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.OrderRepository;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.AdvertisementService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.NotificationService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderService;
 
@@ -43,6 +44,9 @@ public class OrderController {
 	
 	@Autowired 
 	private NotificationService notService;
+	
+	@Autowired
+	private AdvertisementService advService;
 	
 
 	
@@ -75,10 +79,16 @@ public class OrderController {
 	public ResponseEntity<List<OrderModel>> getMyOrders(@RequestBody MyOrdersModel model)
 	{
 		List<Order> orders=new ArrayList<Order>();
+		String advertisementName;
 		if(model.getRoleName().equals("ROLE_STUDENT"))
 			orders=orderService.findByCustomerId(model.getId());
 		if(model.getRoleName().equals("ROLE_TEACHER"))
 			orders=orderService.findByFreelancerId(model.getId());
+		
+		for(Order orderX:orders)
+		{
+			orderX.setAdvertisementName(advService.findById(orderX.getAdvertisementId()).getAdvertisementName());
+		}
 		List<OrderModel> orderModels=OrderModel.orderListToModelList(orders);
 		return new ResponseEntity<>(orderModels,HttpStatus.OK);
 	}
@@ -95,21 +105,20 @@ public class OrderController {
 	@PostMapping("changeRating")
 	public ResponseEntity<?> changeRating(@RequestBody RatingNot model)
 	{
-		Notification notif=model.getNotif();
-		Order order=orderService.findByOrder(notif.getOrderId()).get();
+	
+		Order order=orderService.findByOrder(model.getOrder().getOrderId()).get();
 		order.setStarsForWork(model.getRating());
-		notif.setResponseStatus(NotificationResponseStatus.ESTIMATED);
+		order.setComment(model.getComment());
 		orderService.save(order);
-		this.notService.save(notif);
 		
 		Notification not=new Notification();
-		not.setSenderId(notif.getAddresseeId());
-		not.setAddresseeId(notif.getSenderId());
+		not.setSenderId(order.getCustomerId());
+		not.setAddresseeId(order.getFreelancerId());
 		not.setStatus(NotificationStatus.UNREADED);
 		not.setResponseStatus(NotificationResponseStatus.UNREADED);
 		not.setType(NotificationType.CHANGE_REITING);
-		not.setOrderId(notif.getOrderId());
-		not.setAdvertisementId(notif.getAdvertisementId());
+		not.setOrderId(order.getOrderId());
+		not.setAdvertisementId(order.getAdvertisementId());
 		notService.save(not);
 		return new ResponseEntity<>(null,HttpStatus.OK);
 		

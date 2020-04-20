@@ -83,7 +83,7 @@ public class AdvertisementController {
 		else
 			advertisement.setType(AdvertisementType.FREELANCE);
 		advertisement=advertisementService.save(advertisement);
-		String[] keys=advertisement.setImageKeys(adv.getAllFiles());
+		String[] keys=advertisement.setAttachmentKeys(adv.getAllFiles());
 		advertisementService.save(advertisement);
 	
 		if(keys.length!=0)
@@ -91,7 +91,10 @@ public class AdvertisementController {
 			AmazonModels amazon=new AmazonModels(keys.length);
 			for(int i=0;i<keys.length;i++)
 			{
-				amazon.allFiles[i]=new AmazonModel(keys[i],adv.getAllFiles()[i]);
+			
+				AmazonModel m=adv.getAllFiles().get(i);
+				m.setKey(keys[i]);
+				amazon.allFiles[i]=m;
 			}
 			 HttpEntity<AmazonModels> requestEntity =new HttpEntity<>(amazon);
 			 RestTemplate restTemplate = new RestTemplate();

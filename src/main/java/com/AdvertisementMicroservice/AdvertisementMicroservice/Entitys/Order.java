@@ -29,10 +29,22 @@ public class Order {
 	@Enumerated(EnumType.STRING)
 	private OrderStatus status;
 	
+	@Column(name="COMMENT")
+	private String comment;
+	
 	@Column(name="STARSFORWORK")
 	private double starsForWork;
 
 	
+	
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
 	public double getStarsForWork() {
 		return starsForWork;
 	}

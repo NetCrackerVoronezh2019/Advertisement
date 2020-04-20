@@ -1,8 +1,11 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 import javax.persistence.*;
 
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AmazonModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.Tag;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -55,8 +58,39 @@ public class Advertisement {
 	@Column(name="TAGS")
 	private String tags;
 	
+	@Column(name="ATTACHMENTS")
+	private String attachmentsKeys;
+	
+	@JsonGetter("attachmentsKeys")
+	public String[] getAttachmentKeys()
+	{
+		return this.getAttachmentsKeys().split(",");
+	}
+	public String[] setAttachmentKeys(List<AmazonModel> keys)
+	{
+		String str="";
+		String[] arr=new String[keys.size()];
+		String newKey="";
+		for(int i=0;i<keys.size();i++)
+		{
+		  	newKey="adv"+this.getAdvertisementId()+"_"+keys.get(i).getName();
+		  	arr[i]=newKey;
+		  	str+=newKey+",";
+		}
+		
+		this.setAttachmentsKeys(str);
+		return arr;
+	}
 	
 	
+	public String getAttachmentsKeys() {
+		return attachmentsKeys;
+	}
+
+	public void setAttachmentsKeys(String attachmentsKeys) {
+		this.attachmentsKeys = attachmentsKeys;
+	}
+
 	public void setTags(Tag[] tags)
 	{
 		String allTags=new String();	

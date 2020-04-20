@@ -1,7 +1,7 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,13 +20,13 @@ public class AdvertisementModel {
 	private String section;
 	private String content;
 	private Tag[] tags;
-	private String[] allFiles;
+	private List<AmazonModel> allFiles;
 	
 	
-	public String[] getAllFiles() {
+	public List<AmazonModel> getAllFiles() {
 		return allFiles;
 	}
-	public void setAllFiles(String[] allFiles) {
+	public void setAllFiles(List<AmazonModel> allFiles) {
 		this.allFiles = allFiles;
 	}
 	public Tag[] getTags() {

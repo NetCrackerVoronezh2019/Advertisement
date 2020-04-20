@@ -20,10 +20,32 @@ public class OrderModel {
 	private OrderStatus status;
 	private double starsForWork;
 	private OrderStatus nextStatus;
+	private String freelancerFIO;
+	private String customerFIO;
+	private String comment;
 	
 	
 	
+	public String getFreelancerFIO() {
+		return freelancerFIO;
+	}
+	public void setFreelancerFIO(String freelancerFIO) {
+		this.freelancerFIO = freelancerFIO;
+	}
+	public String getCustomerFIO() {
+		return customerFIO;
+	}
+	public void setCustomerFIO(String customerFIO) {
+		this.customerFIO = customerFIO;
+	}
 	
+	
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
 	public static OrderModel orderToOrderModel(Order order)
 	{
 		OrderModel model=new OrderModel();
@@ -31,9 +53,11 @@ public class OrderModel {
 		model.setCustomerId(order.getCustomerId());
 		model.setFreelancerId(order.getFreelancerId());
 		model.setAdvertisementId(order.getAdvertisementId());
+		model.setAdvertisementName(order.getAdvertisementName());
 		model.setStatus(order.getStatus());
 		model.setStarsForWork(order.getStarsForWork());
 		model.setNextStatus(nextOrderStatus(order.getStatus()));
+		model.setComment(order.getComment());
 		return model;
 	}
 	

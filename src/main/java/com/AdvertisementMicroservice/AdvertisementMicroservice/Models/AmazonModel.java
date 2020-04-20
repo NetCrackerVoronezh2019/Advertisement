@@ -5,12 +5,29 @@ public class AmazonModel {
 	private String key;
 	private String content;
 	private String bucket;
+	private String contentType;
+	private String name;
 	
-	public AmazonModel(String key,String content)
-	{
-		this.key=key;
-		this.content=content;
+	
+	
+	
+		
+	public String getName() {
+		return name;
 	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
 	public String getKey() {
 		return key;
 	}
