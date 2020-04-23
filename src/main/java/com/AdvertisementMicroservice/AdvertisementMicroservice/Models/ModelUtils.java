@@ -16,6 +16,7 @@ public class ModelUtils {
 		adv.setBudget(model.getBudget());
 		adv.setDeadline(model.getDeadline());
 		adv.setDateOfPublication(model.getDateOfPublication());
+
 		
 		return adv;
 	}

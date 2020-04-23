@@ -52,15 +52,14 @@ public class Advertisement {
 	@Column(name="DEADLINE")
 	private LocalDateTime deadline;
 	
-	@Column(name="IMAGEKEYS")
-	private String imageKeys;
-	
 	@Column(name="AUTHORID")
 	private Long authorId;
 	
 	@Column(name="TAGS")
 	private String tags;
 	
+	@Column(name="СOVERIMAGEKEY")
+	private String coverImageKey;
 	
 	 @OneToMany(mappedBy = "advertisement", fetch = FetchType.EAGER)
 	    private Collection<Attachment> attachments;
@@ -112,19 +111,6 @@ public class Advertisement {
 	   return tags;   
 	}
 	
-	@JsonGetter("imageKeys")
-	public String[] getImageKeysArray()
-	{
-	   if(this.getImageKeys()==null)
-		   return new String[0];
-	   String[] t=this.getImageKeys().split(",");
-	   String[] keys=new String[t.length];
-	   for(int i=0; i<t.length;i++)
-	   {
-		   keys[i]=t[i];
-	   }
-	   return keys;   
-	}
 	
 	
 	public String[] getAttachmentKeys(List<AmazonModel> keys)
@@ -141,22 +127,6 @@ public class Advertisement {
 		
 		
 		return arr;
-	}
-	
-	public String[] setImageKeys(String[] images)
-	{
-		String imageKeys=new String();
-		String[] keys=new String[images.length];
-		String newKey;
-		for(int i=0;i<images.length;i++)
-		{
-			newKey="adv_"+this.getAdvertisementId()+"image_"+i;
-			keys[i]=newKey;
-			imageKeys+=newKey+",";
-			
-		}
-		this.setImageKeys(imageKeys);
-		return keys;
 	}
 	
 	
@@ -179,15 +149,13 @@ public class Advertisement {
 	public String getSection() {
 		return section;
 	}
-	
-	public String getImageKeys() {
-		return imageKeys;
-	}
 
-	public void setImageKeys(String imageKeys) {
-		this.imageKeys = imageKeys;
+	public String getCoverImageKey() {
+		return coverImageKey;
 	}
-
+	public void setCoverImageKey(String coverImageKey) {
+		this.coverImageKey = coverImageKey;
+	}
 	public void setSection(String section) {
 		this.section = section;
 	}

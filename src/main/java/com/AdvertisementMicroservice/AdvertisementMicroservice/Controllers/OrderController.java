@@ -48,6 +48,14 @@ public class OrderController {
 	@Autowired
 	private AdvertisementService advService;
 	
+	
+	
+	@GetMapping("getFreelancerAllFeedBack/{freelancerId}")
+	public ResponseEntity<List<Order>> getFreelancerAllFeedBack(@PathVariable Long freelancerId)
+	{
+		List<Order> allCompletedOrders = this.orderService.findAllFeedBackByFreelancerId(freelancerId);
+		return new ResponseEntity<>(allCompletedOrders,HttpStatus.OK);
+	}
 
 	
 	@GetMapping("rating/{freelancerId}")
@@ -59,7 +67,7 @@ public class OrderController {
 		return new ResponseEntity<>(null,HttpStatus.OK);
 	}
 	
-	@PostMapping("haveIOrder")
+	@PostMapping("isMyOrder")
 	public ResponseEntity<OrderModel> haveIOrder(@RequestBody @Valid isMyOrderModel model)
 	{
 		Long advId=model.getAdvertisementId();

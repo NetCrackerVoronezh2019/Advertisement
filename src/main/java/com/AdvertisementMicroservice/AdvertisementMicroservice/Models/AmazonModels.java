@@ -1,10 +1,13 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AmazonModels {
-	public AmazonModel[] allFiles;
+	public List<AmazonModel> allFiles;
 	
-	public AmazonModels(int count)
+	public AmazonModels()
 	{
-		allFiles=new AmazonModel[count];
+		allFiles=new ArrayList<AmazonModel>();
 	}
 }

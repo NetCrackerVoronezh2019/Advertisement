@@ -26,6 +26,9 @@ public class NotificationService {
 		return notRep.findByAddresseeId(userId);
 	}
 	
+	public List<Notification> findСommonNotifications(Long senderId, Long addresseeid){
+		return this.notRep.findСommonNotifications(senderId, addresseeid);
+	}
 	
 	public void setAllNotificationsAsReaded(Long userId)
 	{

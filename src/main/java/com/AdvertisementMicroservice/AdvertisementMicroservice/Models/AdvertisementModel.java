@@ -18,7 +18,7 @@ public class AdvertisementModel {
 	private LocalDateTime dateOfPublication;
 	private Integer budget;
 	private String section;
-	private String content;
+	private AmazonModel coverImage;
 	private Tag[] tags;
 	private List<AmazonModel> allFiles;
 	
@@ -41,11 +41,12 @@ public class AdvertisementModel {
 	public void setAuthorRole(String authorRole) {
 		this.authorRole = authorRole;
 	}
-	public String getContent() {
-		return content;
+	
+	public AmazonModel getCoverImage() {
+		return coverImage;
 	}
-	public void setContent(String content) {
-		this.content = content;
+	public void setCoverImage(AmazonModel coverImage) {
+		this.coverImage = coverImage;
 	}
 	public Long getAdvertisementId() {
 		return advertisementId;

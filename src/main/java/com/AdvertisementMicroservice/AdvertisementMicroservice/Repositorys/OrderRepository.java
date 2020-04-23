@@ -16,10 +16,19 @@ public interface OrderRepository  extends JpaRepository<Order,Long> {
 	
 	public List<Order> findByFreelancerId(Long id);
 	
-	@Query(value = "Select avg(starsforwork) from orders where starsforwork>0 and freelancerid=?1", 
+	@Query(value = "Select avg(starsforwork) from orders "
+			+ "where starsforwork>0 and freelancerid=?1", 
 			  nativeQuery = true)
 	public Optional<Double> findAllRaitings(Long id);
 	
 	public Optional<Order> findAllByAdvertisementId(Long id);
 	
+	
+	@Query(value = "Select * from orders"
+			+ " where starsforwork>0 and freelancerid=?1 and status='СOMPLETED'", 
+			  nativeQuery = true)
+	public Optional<List<Order>> findAllFeedBackByFreelancerId(Long id);
+	
+
+
 }

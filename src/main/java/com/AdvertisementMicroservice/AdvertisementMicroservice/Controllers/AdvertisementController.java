@@ -90,11 +90,15 @@ public class AdvertisementController {
 		advertisement=advertisementService.save(advertisement);
 		
 		String[] keys=advertisement.getAttachmentKeys(adv.getAllFiles());
+		advertisement=advertisementService.save(advertisement);
+		advertisement.setCoverImageKey("advcoverImage_"+advertisement.getAdvertisementId());
+		AmazonModel amazonModel=adv.getCoverImage();
+		amazonModel.setKey(advertisement.getCoverImageKey());
 		advertisementService.save(advertisement);
-	
+		
 		if(keys.length!=0)
 		{
-			AmazonModels amazon=new AmazonModels(keys.length);
+			AmazonModels amazon=new AmazonModels();
 			for(int i=0;i<keys.length;i++)
 			{
 				Attachment a=new Attachment();
@@ -103,9 +107,12 @@ public class AdvertisementController {
 				attachmentService.save(a);
 				AmazonModel m=adv.getAllFiles().get(i);
 				m.setKey(keys[i]);
-				amazon.allFiles[i]=m;
+				amazon.allFiles.add(m);
 			}
 			
+			amazon.allFiles.add(amazonModel);
+			
+			 
 			 HttpEntity<AmazonModels> requestEntity =new HttpEntity<>(amazon);
 			 RestTemplate restTemplate = new RestTemplate();
 			 try 
@@ -117,6 +124,8 @@ public class AdvertisementController {
 				
 			
 			}
+			
+			
 			
 			
 		 }

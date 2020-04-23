@@ -71,6 +71,11 @@ public class OrderService {
 		return order;
 	}
 	
+	public List<Order> findAllFeedBackByFreelancerId(Long id)
+	{
+		return this.orderRep.findAllFeedBackByFreelancerId(id).get();
+	}
+	
 	
 	
 }

@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertisement;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Notification;
@@ -31,7 +34,17 @@ public class NotificationController {
 	@Autowired
 	private OrderService orderService;
 	
+	@Autowired 
+	private AdvertisementService advService;
 	
+	
+	
+	@GetMapping("getCommonNots/{senderId}/{addresseeId}")
+	public ResponseEntity<List<Notification>> getCommonNots(@PathVariable Long senderId,@PathVariable Long addresseeId)
+	{
+		List<Notification> notifications=this.notifService.findСommonNotifications(senderId,addresseeId);
+		return new ResponseEntity<>(notifications,HttpStatus.OK);
+	}
 	
 	@GetMapping("setNotificatiosAsReaded/{userId}")
 	public ResponseEntity<?> setNotificationsAsReaded(@PathVariable Long userId)
@@ -90,6 +103,23 @@ public class NotificationController {
 			Order order=orderService.generateOrder(notif);
 			notifService.save(newNotif);
 			orderService.save(order);
+	
+			Advertisement adv=advService.findById(notif.getAdvertisementId());
+			try {
+				UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088//advertisement/createDialog").
+						queryParam("creatorId",notif.getSenderId())
+						.queryParam("userId",notif.getAddresseeId())
+						.queryParam("advertisementName",adv.getAdvertisementName());
+				RestTemplate restTemplate = new RestTemplate();
+				ResponseEntity<Integer> res=restTemplate.exchange(uriBuilder.build().encode().toUri(),HttpMethod.POST,null,new ParameterizedTypeReference<Integer>(){});
+			}
+			catch(Exception ex)
+			{
+				
+			}
+		    
+		
+			
 		}
 		if(notif.getResponseStatus()==NotificationResponseStatus.REJECTED)
 		{
