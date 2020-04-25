@@ -21,7 +21,12 @@ public interface OrderRepository  extends JpaRepository<Order,Long> {
 			  nativeQuery = true)
 	public Optional<Double> findAllRaitings(Long id);
 	
-	public Optional<Order> findAllByAdvertisementId(Long id);
+	
+	@Query(value = "Select * from orders where advertisementid=?1", 
+			  nativeQuery = true)
+	public Optional<Order> findAllByAdvId(Long id);
+	
+	
 	
 	
 	@Query(value = "Select * from orders"

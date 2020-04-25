@@ -64,6 +64,9 @@ public class Advertisement {
 	 @OneToMany(mappedBy = "advertisement", fetch = FetchType.EAGER)
 	    private Collection<Attachment> attachments;
 	 
+	 @OneToMany(mappedBy = "advertisement", fetch = FetchType.LAZY)
+	    private Collection<Order> orders;
+	 
 	 
 	 @JsonGetter("attachments")
 	 public List<String> sendAttachmentsKeys(){

@@ -1,5 +1,6 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Notificat
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationType;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.FullNotificationModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.SendAdvertisementNotificationModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.NotificationRepository;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.OrderRepository;
@@ -73,12 +75,26 @@ public class NotificationController {
 	}
 	
 	@GetMapping("getMyAllNotifications/{userId}")
-	public ResponseEntity<List<Notification>> getMyAllNotifications(@PathVariable Long userId)
+	public ResponseEntity<List<FullNotificationModel>> getMyAllNotifications(@PathVariable Long userId)
 	{   
-		return new ResponseEntity<>(notifService.getMyAllNotifications(userId).stream()
+		List<Notification> notifs=notifService.getMyAllNotifications(userId).stream()
 				.filter(n->n.getResponseStatus()==NotificationResponseStatus.UNREADED)
-				.collect(Collectors.toList())
-				,HttpStatus.OK);
+				.collect(Collectors.toList());
+		List<Advertisement> advs=advService.findAll();
+		List<FullNotificationModel> full=new ArrayList<>();
+		
+		for(Notification n:notifs)
+		{
+			Advertisement adv=advs.stream().filter(a->a.getAdvertisementId().equals(n.getAdvertisementId()))
+											.findFirst().get();
+			FullNotificationModel fm=new FullNotificationModel();
+			fm.setAdvertisementName(adv.getAdvertisementName());
+			fm.setNotification(n);
+			full.add(fm);
+			
+		}
+		return new ResponseEntity<>(full,HttpStatus.OK);
+		
 		
 	}
 	
@@ -102,9 +118,10 @@ public class NotificationController {
 			newNotif=notifService.generateResponseNotification(notif);
 			Order order=orderService.generateOrder(notif);
 			notifService.save(newNotif);
+			Advertisement adv=advService.findById(notif.getAdvertisementId());
+			order.setAdvertisement(adv);
 			orderService.save(order);
 	
-			Advertisement adv=advService.findById(notif.getAdvertisementId());
 			try {
 				UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088//advertisement/createDialog").
 						queryParam("creatorId",notif.getSenderId())

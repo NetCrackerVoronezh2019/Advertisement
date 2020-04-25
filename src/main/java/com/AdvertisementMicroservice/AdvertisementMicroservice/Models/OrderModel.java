@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertisement;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
 
@@ -23,6 +24,7 @@ public class OrderModel {
 	private String freelancerFIO;
 	private String customerFIO;
 	private String comment;
+	private Advertisement advertisement; 
 	
 	
 	
@@ -46,14 +48,21 @@ public class OrderModel {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+	
+	
+	public Advertisement getAdvertisement() {
+		return advertisement;
+	}
+	public void setAdvertisement(Advertisement advertisement) {
+		this.advertisement = advertisement;
+	}
 	public static OrderModel orderToOrderModel(Order order)
 	{
 		OrderModel model=new OrderModel();
 		model.setOrderId(order.getOrderId());
 		model.setCustomerId(order.getCustomerId());
 		model.setFreelancerId(order.getFreelancerId());
-		model.setAdvertisementId(order.getAdvertisementId());
-		model.setAdvertisementName(order.getAdvertisementName());
+		model.setAdvertisement(order.getAdvertisement());
 		model.setStatus(order.getStatus());
 		model.setStarsForWork(order.getStarsForWork());
 		model.setNextStatus(nextOrderStatus(order.getStatus()));

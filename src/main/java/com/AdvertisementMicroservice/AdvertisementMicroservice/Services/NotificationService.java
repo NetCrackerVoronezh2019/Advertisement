@@ -100,7 +100,7 @@ public class NotificationService {
 			Order order=orderService.findByOrder(orderId).get();
 			n.setAddresseeId(order.getCustomerId());
 			n.setSenderId(order.getFreelancerId());
-			n.setAdvertisementId(order.getAdvertisementId());
+		    n.setAdvertisementId(order.getAdvertisement().getAdvertisementId());
 			n.setOrderId(orderId);
 			
 			return n;
@@ -113,7 +113,7 @@ public class NotificationService {
 			Order order=orderService.findByOrder(orderId).get();
 			n.setAddresseeId(order.getCustomerId());
 			n.setSenderId(order.getFreelancerId());
-			n.setAdvertisementId(order.getAdvertisementId());
+			 n.setAdvertisementId(order.getAdvertisement().getAdvertisementId());
 			n.setOrderId(orderId);
 			return n;
 		}

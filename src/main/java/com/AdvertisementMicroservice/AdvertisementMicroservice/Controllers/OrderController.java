@@ -67,6 +67,7 @@ public class OrderController {
 		return new ResponseEntity<>(null,HttpStatus.OK);
 	}
 	
+	
 	@PostMapping("isMyOrder")
 	public ResponseEntity<OrderModel> haveIOrder(@RequestBody @Valid isMyOrderModel model)
 	{
@@ -83,23 +84,24 @@ public class OrderController {
 		
 	}
 	
+
+	
+	
+	
 	@PostMapping("getMyOrders")
 	public ResponseEntity<List<OrderModel>> getMyOrders(@RequestBody MyOrdersModel model)
 	{
 		List<Order> orders=new ArrayList<Order>();
-		String advertisementName;
 		if(model.getRoleName().equals("ROLE_STUDENT"))
 			orders=orderService.findByCustomerId(model.getId());
 		if(model.getRoleName().equals("ROLE_TEACHER"))
 			orders=orderService.findByFreelancerId(model.getId());
 		
-		for(Order orderX:orders)
-		{
-			orderX.setAdvertisementName(advService.findById(orderX.getAdvertisementId()).getAdvertisementName());
-		}
 		List<OrderModel> orderModels=OrderModel.orderListToModelList(orders);
 		return new ResponseEntity<>(orderModels,HttpStatus.OK);
 	}
+	
+	
 	
 	@GetMapping("getFreelancerOrders/{userId}")
 	public ResponseEntity<List<OrderModel>> getallOrders(@PathVariable Long userId)
@@ -110,11 +112,12 @@ public class OrderController {
 		return new ResponseEntity<>(orderModels,HttpStatus.OK);
 	}
 	
+	
 	@PostMapping("changeRating")
-	public ResponseEntity<?> changeRating(@RequestBody RatingNot model)
+	public ResponseEntity<Order> changeRating(@RequestBody RatingNot model)
 	{
 	
-		Order order=orderService.findByOrder(model.getOrder().getOrderId()).get();
+		Order order=orderService.findByOrder(model.getOrderId()).get();
 		order.setStarsForWork(model.getRating());
 		order.setComment(model.getComment());
 		orderService.save(order);
@@ -126,11 +129,12 @@ public class OrderController {
 		not.setResponseStatus(NotificationResponseStatus.UNREADED);
 		not.setType(NotificationType.CHANGE_REITING);
 		not.setOrderId(order.getOrderId());
-		not.setAdvertisementId(order.getAdvertisementId());
+		not.setAdvertisementId(order.getAdvertisement().getAdvertisementId());
 		notService.save(not);
-		return new ResponseEntity<>(null,HttpStatus.OK);
+		return new ResponseEntity<>(order,HttpStatus.OK);
 		
 	}
+	
 	
 	@PostMapping("getMyOrder")
 	public ResponseEntity<Order> getMyOrder(@RequestBody MyOrderModel model)

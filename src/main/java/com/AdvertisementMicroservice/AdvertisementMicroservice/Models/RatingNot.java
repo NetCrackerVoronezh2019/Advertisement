@@ -5,7 +5,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
 
 public class RatingNot {
 	
-	private Order order;
+	private Long orderId;
 	private double rating;
 	private String comment;
 	
@@ -17,18 +17,21 @@ public class RatingNot {
 		this.comment = comment;
 	}
 		
-	public Order getOrder() {
-		return order;
-	}
-	public void setOrder(Order order) {
-		this.order = order;
-	}
 	public double getRating() {
 		return rating;
 	}
 	public void setRating(double rating) {
 		this.rating = rating;
 	}
+	public Long getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
+	}
+	
+	
+	
 	
 	
 }

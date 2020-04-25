@@ -33,10 +33,12 @@ public class OrderService {
 		return orderRep.findById(id);
 	}
 	
+	
 	public Optional<Order> findByAdvertisementId(Long id)
 	{
-		return orderRep.findAllByAdvertisementId(id);
+		return orderRep.findAllByAdvId(id);
 	}
+	
 	public List<Order> findByFreelancerId(Long id)
 	{
 		return orderRep.findByFreelancerId(id);
@@ -51,9 +53,7 @@ public class OrderService {
 	{
 		Order order=new Order();
 		order.setStatus(OrderStatus.ACCEPTED);
-		order.setAdvertisementId(notif.getAdvertisementId());
-		order.setAdvertisementName(notif.getAdvertisementName());
-		
+
 		if(notif.getType()==NotificationType.TAKE_ADVERTISEMENT)
 		{
 			order.setCustomerId(notif.getAddresseeId());

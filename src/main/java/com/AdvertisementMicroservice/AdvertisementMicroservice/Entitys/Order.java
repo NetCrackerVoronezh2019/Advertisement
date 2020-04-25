@@ -2,6 +2,8 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 
 @Entity
@@ -19,24 +21,33 @@ public class Order {
 	@Column(name="FREELANCERID")
 	private Long freelancerId;
 	
-	@Column(name="ADVERTISEMENTID")
-	private Long advertisementId;
-	
-	@Column(name="ADVERTISEMENTNAME")
-	private String advertisementName;
-	
 	@Column(name="STATUS")
 	@Enumerated(EnumType.STRING)
 	private OrderStatus status;
+	
+	
 	
 	@Column(name="COMMENT")
 	private String comment;
 	
 	@Column(name="STARSFORWORK")
 	private double starsForWork;
+	
+
+	@ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "ADVERTISEMENTID")
+    private Advertisement advertisement;
 
 	
 	
+	public Advertisement getAdvertisement() {
+		return advertisement;
+	}
+
+	public void setAdvertisement(Advertisement advertisement) {
+		this.advertisement = advertisement;
+	}
+
 	public String getComment() {
 		return comment;
 	}
@@ -53,13 +64,6 @@ public class Order {
 		this.starsForWork = starsForWork;
 	}
 
-	public String getAdvertisementName() {
-		return advertisementName;
-	}
-
-	public void setAdvertisementName(String advertisementName) {
-		this.advertisementName = advertisementName;
-	}
 
 	public Long getOrderId() {
 		return orderId;
@@ -73,16 +77,6 @@ public class Order {
 		return customerId;
 	}
 	
-	
-
-	public Long getAdvertisementId() {
-		return advertisementId;
-	}
-
-	public void setAdvertisementId(Long advertisementId) {
-		this.advertisementId = advertisementId;
-	}
-
 	public void setCustomerId(Long customerId) {
 		this.customerId = customerId;
 	}
