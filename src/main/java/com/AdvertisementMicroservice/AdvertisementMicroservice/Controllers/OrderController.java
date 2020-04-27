@@ -84,8 +84,6 @@ public class OrderController {
 		
 	}
 	
-
-	
 	
 	
 	@PostMapping("getMyOrders")
@@ -99,6 +97,30 @@ public class OrderController {
 		
 		List<OrderModel> orderModels=OrderModel.orderListToModelList(orders);
 		return new ResponseEntity<>(orderModels,HttpStatus.OK);
+	}
+	
+	@PostMapping("getUserOrdersByOrderStatus")
+	public ResponseEntity<List<OrderModel>> getMyOrdersByOrderStatus(@RequestBody MyOrderModel model)
+	{
+		List<OrderModel> models=null;
+		System.out.println(model.toString());
+		if(model.getRole().equals("ROLE_STUDENT"))
+		{
+			Optional<List<Order>> orders=this.orderService.findByCustomerIdAndOrderStatus(model.getMyId(), model.getStatus());
+			if(orders.isPresent())
+				models=OrderModel.orderListToModelList(orders.get());
+			return new ResponseEntity<>(models,HttpStatus.OK);
+		}
+		if(model.getRole().equals("ROLE_TEACHER"))
+		{
+			
+			Optional<List<Order>> orders=this.orderService.findByFreelancerIdAndOrderStatus(model.getMyId(), model.getStatus());
+			if(orders.isPresent())
+				models=OrderModel.orderListToModelList(orders.get());
+			return new ResponseEntity<>(models,HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<>(models,HttpStatus.OK);
 	}
 	
 	
@@ -136,11 +158,12 @@ public class OrderController {
 	}
 	
 	
-	@PostMapping("getMyOrder")
-	public ResponseEntity<Order> getMyOrder(@RequestBody MyOrderModel model)
+	@GetMapping("getOrder/{orderId}")
+	public ResponseEntity<OrderModel> getMyOrder(@PathVariable Long orderId)
 	{
-		Order o=orderService.findByOrder(model.getOrderId()).get();
-		return new ResponseEntity<>(o,HttpStatus.OK);
+		Order order=orderService.findByOrder(orderId).get();
+		OrderModel orderModel=OrderModel.orderToOrderModel(order);
+		return new ResponseEntity<>(orderModel,HttpStatus.OK);
 	}
 	
 	

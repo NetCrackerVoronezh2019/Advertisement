@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
 
 @Repository
 public interface OrderRepository  extends JpaRepository<Order,Long> {
@@ -34,6 +35,17 @@ public interface OrderRepository  extends JpaRepository<Order,Long> {
 			  nativeQuery = true)
 	public Optional<List<Order>> findAllFeedBackByFreelancerId(Long id);
 	
-
+	
+	@Query(value = "SELECT * FROM ORDERS\r\n" + 
+			"WHERE FREELANCERID=?1 AND STATUS=?2", 
+			  nativeQuery = true)
+	public Optional<List<Order>> findAllByFreelancerIdAndOrderStatus(Long id,String status);
+	
+	@Query(value = "SELECT * FROM ORDERS\r\n" + 
+			"WHERE CUSTOMERID=?1 AND STATUS=?2", 
+			  nativeQuery = true)
+	public Optional<List<Order>> findAllByCustomerIdAndOrderStatus(Long id,String status);
 
 }
+
+

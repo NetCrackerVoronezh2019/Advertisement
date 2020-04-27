@@ -80,6 +80,7 @@ public class Advertisement {
 		 	return list;
 		 
 	 }
+	 
 	public Collection<Attachment> getAttachment() {
 		return attachments;
 	}

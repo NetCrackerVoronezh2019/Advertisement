@@ -1,10 +1,21 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
+
 public class MyOrderModel {
 
 	public String role;
 	public Long myId;
 	public Long orderId;
+	public OrderStatus status;
+	
+	
+	public OrderStatus getStatus() {
+		return status;
+	}
+	public void setStatus(OrderStatus status) {
+		this.status = status;
+	}
 	public String getRole() {
 		
 		return role;
@@ -24,6 +35,11 @@ public class MyOrderModel {
 	public void setOrderId(Long orderId) {
 		this.orderId = orderId;
 	}
+	@Override
+	public String toString() {
+		return "MyOrderModel [role=" + role + ", myId=" + myId + ", orderId=" + orderId + ", status=" + status + "]";
+	}
+	
 	
 	
 }
