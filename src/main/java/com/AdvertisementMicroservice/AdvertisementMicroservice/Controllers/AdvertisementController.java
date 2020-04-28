@@ -2,6 +2,7 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Controllers;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -11,6 +12,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.*;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.*;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.AttachmentRepository;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.*;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.searchRepository.AdvertisementElasticRepository;
 
 
 
@@ -22,6 +24,14 @@ public class AdvertisementController {
 	@Autowired
 	private  SubjectService subjectService;
 	
+	
+	@Autowired 
+	private AdvertisementElasticRepository elasticRep;
+	
+	
+	@Autowired 
+	private AdvertisementElasticSearchService elasticService;
+	
 	@Autowired
 	private AttachmentService attachmentService;
 	
@@ -30,13 +40,45 @@ public class AdvertisementController {
 		
 	
 	@PostMapping("filterAdvertisements")
-	public ResponseEntity<List<Advertisement>> filterAdvertisements(@RequestBody AdvFilters advFilters)
+	public ResponseEntity<List<AdvertisementModel>> filterAdvertisements(@RequestBody AdvFilters advFilters)
 	{
-		List<Advertisement> advs=this.advertisementService.filterAdvertisement(advFilters);
-		return new ResponseEntity<>(advs,HttpStatus.OK);
+		List<Advertisement> advs=this.elasticService.filter(advFilters);
+		
+		List<AdvertisementModel> models=AdvertisementModel.advListToModelList(advs);
+		return new ResponseEntity<>(models,HttpStatus.OK);
+		
 		
 	}
 	
+	
+	/*
+	@GetMapping("filter")
+	public List<Advertisement> filter()
+	{
+		return  this.elasticService.filter();
+	}
+	
+	*/
+	
+	
+	@GetMapping("allAdvBabe")
+	public List<Advertisement> allAdvBabe()
+	{
+		List<Advertisement> documents = new ArrayList<>();
+        // iterate all documents and add it to list
+		System.out.println("ddfdsfsf");
+        for (Advertisement doc : this.elasticRep.findAll()) {
+        	System.out.println("ddfdsfsf");
+            documents.add(doc);
+        }
+        return documents;
+	}
+	
+	@GetMapping("delete")
+	public void fdfgndg()
+	{
+		this.elasticRep.deleteAll();
+	}
 	@GetMapping("allSubjects")
 	public List<Subject> getAllSubjects()
 	{
@@ -44,10 +86,11 @@ public class AdvertisementController {
 	}
 	
 	@GetMapping("allAdvertisements")
-	public ResponseEntity<List<Advertisement>> getAllAdvertisements()
+	public ResponseEntity<List<AdvertisementModel>> getAllAdvertisements()
 	{
 		List<Advertisement> advs=advertisementService.findAll();
-		return new ResponseEntity<>(advs,HttpStatus.OK);
+		List<AdvertisementModel> models=AdvertisementModel.advListToModelList(advs);
+		return new ResponseEntity<>(models,HttpStatus.OK);
 		
 	}
 	
@@ -67,10 +110,11 @@ public class AdvertisementController {
 	}
 	
 	@GetMapping("advertisement/{id}")
-	public ResponseEntity<Advertisement> getadvbyid(@PathVariable String id)
+	public ResponseEntity<AdvertisementModel> getadvbyid(@PathVariable String id)
 	{
 		Advertisement adv=advertisementService.findById(Long.parseLong(id));
-		return new ResponseEntity<>(adv,HttpStatus.OK);
+		
+		return new ResponseEntity<>(AdvertisementModel.advertisementToModel(adv),HttpStatus.OK);
 	}
 	
 	
@@ -82,7 +126,7 @@ public class AdvertisementController {
 		Advertisement advertisement=ModelUtils.AdvertisementModelToEntity(adv);
 		advertisement.setStatus(AdvertisementStatus.ACTIVE);
 		advertisement=advertisementService.save(advertisement);
-		advertisement.setTags(adv.getTags());
+		advertisement.setTagsAsArray(adv.getTags());
 		if(adv.getAuthorRole().equals("ROLE_STUDENT"))
 			advertisement.setType(AdvertisementType.ORDER);
 		else
@@ -94,7 +138,8 @@ public class AdvertisementController {
 		advertisement.setCoverImageKey("advcoverImage_"+advertisement.getAdvertisementId());
 		AmazonModel amazonModel=adv.getCoverImage();
 		amazonModel.setKey(advertisement.getCoverImageKey());
-		advertisementService.save(advertisement);
+		advertisement=advertisementService.save(advertisement);
+		this.elasticRep.save(advertisement);
 		
 		if(keys.length!=0)
 		{
@@ -109,8 +154,10 @@ public class AdvertisementController {
 				m.setKey(keys[i]);
 				amazon.allFiles.add(m);
 			}
-			
+		
 			amazon.allFiles.add(amazonModel);
+			Advertisement advForElastic=advertisementService.findById(advertisement.getAdvertisementId());
+			
 			
 			 
 			 HttpEntity<AmazonModels> requestEntity =new HttpEntity<>(amazon);

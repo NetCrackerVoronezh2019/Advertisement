@@ -8,21 +8,31 @@ import java.util.stream.Collectors;
 
 import javax.persistence.*;
 
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AmazonModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.Tag;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.annotation.JsonSetter;
 
 
 @Entity
 @Table(name="ADVERTISEMENTS")
+@org.springframework.data.elasticsearch.annotations.Document(indexName = "advindex", type = "Advertisement")
 public class Advertisement {
 
 	
-	@Id
+	
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="ADVERTISEMENTID")
+	
+	@Id   // javax.persistence.Id for PorstGres
+	@org.springframework.data.annotation.Id // for ElasticSearch
 	private Long advertisementId;
 	
 	@Column(name="STATUS")
@@ -45,11 +55,14 @@ public class Advertisement {
 	@Column(name="BUDGET")
 	private Integer budget;
 	
+	@Field(type = FieldType.Date)
 	@Column(name="DATEOFPUBLICATION")
-	@JsonProperty(access=Access.READ_ONLY)
+	//@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime dateOfPublication;
 	
 	@Column(name="DEADLINE")
+	@Field(type = FieldType.Date)
+	//@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime deadline;
 	
 	@Column(name="AUTHORID")
@@ -68,9 +81,8 @@ public class Advertisement {
 	    private Collection<Order> orders;
 	 
 	 
-	 @JsonGetter("attachments")
 	 public List<String> sendAttachmentsKeys(){
-		 Collection<Attachment> att=this.getAttachment();
+		 Collection<Attachment> att=this.getAttachments();
 		 if(att==null)
 			 return new ArrayList<String>();
 		 List<String> list=att.stream()
@@ -81,7 +93,7 @@ public class Advertisement {
 		 
 	 }
 	 
-	public Collection<Attachment> getAttachment() {
+	public Collection<Attachment> getAttachments() {
 		return attachments;
 	}
 
@@ -89,8 +101,10 @@ public class Advertisement {
 		this.attachments = attachments;
 	}
 
-	public void setTags(Tag[] tags)
+	
+	public void setTagsAsArray(Tag[] tags)
 	{
+		
 		String allTags=new String();	
 		for(Tag tag:tags)
 		{
@@ -98,23 +112,15 @@ public class Advertisement {
 		}
 		
 		this.setTags(allTags);
+		
+		
 	}
 	
-	@JsonGetter("tags")
-	public Tag[] getTagsArray()
+	
+	public void setTags(String tags)
 	{
-	   if(this.getTags()==null)
-		   return new Tag[0];
-	   String[] t=this.getTags().split(",");
-	   Tag[] tags=new Tag[t.length];
-	   for(int i=0; i<t.length;i++)
-	   {
-		   tags[i]=new Tag();
-		   tags[i].name=t[i];
-	   }
-	   return tags;   
+		this.tags=tags;
 	}
-	
 	
 	
 	public String[] getAttachmentKeys(List<AmazonModel> keys)
@@ -133,14 +139,11 @@ public class Advertisement {
 		return arr;
 	}
 	
-	
 	public String getTags() {
+		System.out.println("STRING GET TAGS");
 		return tags;
 	}
 
-	public void setTags(String tags) {
-		this.tags = tags;
-	}
 
 	public AdvertisementStatus getStatus() {
 		return status;

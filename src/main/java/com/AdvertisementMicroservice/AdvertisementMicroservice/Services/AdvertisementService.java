@@ -44,6 +44,8 @@ public class AdvertisementService {
 		return advRep.save(adv);
 	}
 	
+	
+	/*
 	public List<Advertisement> filterAdvertisement(AdvFilters filters)
 	{
 		List<Advertisement> advs=this.findAll();
@@ -59,7 +61,8 @@ public class AdvertisementService {
 	    
 	    return filterByTags(advs,filters);
 	}
-	
+	*/
+	/*
 	
 	private List<Advertisement> filterByTags(List<Advertisement> advs,AdvFilters filters)
 	{
@@ -87,6 +90,7 @@ public class AdvertisementService {
 		}
 		return advertisements;
 	}
+	*/
 	public List<Advertisement> getAdvertisementsByAuthorId(Long id)
 	{
 		return advRep.findByAuthorId(id);
