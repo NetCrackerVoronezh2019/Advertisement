@@ -1,5 +1,7 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Services;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +22,10 @@ public class AttachmentService {
 	public Attachment save(Attachment attachment)
 	{
 		return attachmentRep.save(attachment);
+	}
+	
+	public List<Attachment> findAllByAdvertisementId(Long id)
+	{
+		return this.attachmentRep.findAllByAdvertisementId(id);
 	}
 }

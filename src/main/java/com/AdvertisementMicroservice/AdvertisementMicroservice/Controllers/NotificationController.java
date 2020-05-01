@@ -1,5 +1,6 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Controllers;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Notificat
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationType;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.CertificationNotModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.FullNotificationModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.SendAdvertisementNotificationModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.NotificationRepository;
@@ -25,6 +27,8 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.Order
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.AdvertisementService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.NotificationService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderService;
+
+
 
 @RestController
 @CrossOrigin("http://localhost:4200")
@@ -42,10 +46,50 @@ public class NotificationController {
 	
 	
 	@GetMapping("getCommonNots/{senderId}/{addresseeId}")
-	public ResponseEntity<List<Notification>> getCommonNots(@PathVariable Long senderId,@PathVariable Long addresseeId)
+	public ResponseEntity<List<FullNotificationModel>> getCommonNots(@PathVariable Long senderId,@PathVariable Long addresseeId)
 	{
-		List<Notification> notifications=this.notifService.findСommonNotifications(senderId,addresseeId);
-		return new ResponseEntity<>(notifications,HttpStatus.OK);
+		List<Notification> notifs=this.notifService.findСommonNotifications(senderId,addresseeId);
+
+		List<Advertisement> advs=advService.findAll();
+		List<FullNotificationModel> full=new ArrayList<>();
+		
+		for(Notification n:notifs)
+		{
+			FullNotificationModel fm=new FullNotificationModel();
+			if(n.getType()!=NotificationType.ACCEPTED_CERTIFICATION
+					&& n.getType()!=NotificationType.REJECTED_CERTIFICATION)
+			{
+			Advertisement adv=advs.stream().filter(a->a.getAdvertisementId().equals(n.getAdvertisementId()))
+											.findFirst().get();
+			
+			fm.setAdvertisementName(adv.getAdvertisementName());
+			}
+			fm.setNotification(n);
+			full.add(fm);
+			
+		}
+		return new ResponseEntity<>(full,HttpStatus.OK);
+		
+
+	}
+	
+	
+	@PostMapping("certificationNotification")
+	public ResponseEntity<Boolean> certificationNotification(@RequestBody List<CertificationNotModel> models)
+	{
+		for(CertificationNotModel model:models)
+		{
+			Notification not=new Notification();
+			not.setAddresseeId(model.getAddresseeId());
+			not.setCertificateName(model.getCertificateName());
+			not.setType(model.getType());
+			not.setStatus(NotificationStatus.UNREADED);
+			not.setResponseStatus(NotificationResponseStatus.UNREADED);
+			not.setDate(LocalDateTime.now());
+			this.notifService.save(not);
+		}
+		
+		return new ResponseEntity<>(Boolean.TRUE,HttpStatus.OK);
 	}
 	
 	@GetMapping("setNotificatiosAsReaded/{userId}")
@@ -69,6 +113,7 @@ public class NotificationController {
 	{
 		notif.setStatus(NotificationStatus.UNREADED);
 		notif.setResponseStatus(NotificationResponseStatus.UNREADED);
+		notif.setDate(LocalDateTime.now());
 		System.out.println("name "+notif.getAdvertisementName());
 		notifService.save(notif);
 		return new ResponseEntity<>(null,HttpStatus.OK);
@@ -85,10 +130,15 @@ public class NotificationController {
 		
 		for(Notification n:notifs)
 		{
+			FullNotificationModel fm=new FullNotificationModel();
+			if(n.getType()!=NotificationType.ACCEPTED_CERTIFICATION
+					&& n.getType()!=NotificationType.REJECTED_CERTIFICATION)
+			{
 			Advertisement adv=advs.stream().filter(a->a.getAdvertisementId().equals(n.getAdvertisementId()))
 											.findFirst().get();
-			FullNotificationModel fm=new FullNotificationModel();
+			
 			fm.setAdvertisementName(adv.getAdvertisementName());
+			}
 			fm.setNotification(n);
 			full.add(fm);
 			

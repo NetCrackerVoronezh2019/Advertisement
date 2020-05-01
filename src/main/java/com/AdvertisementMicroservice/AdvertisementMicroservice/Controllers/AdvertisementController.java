@@ -139,7 +139,7 @@ public class AdvertisementController {
 		AmazonModel amazonModel=adv.getCoverImage();
 		amazonModel.setKey(advertisement.getCoverImageKey());
 		advertisement=advertisementService.save(advertisement);
-		this.elasticRep.save(advertisement);
+		
 		
 		if(keys.length!=0)
 		{
@@ -154,11 +154,14 @@ public class AdvertisementController {
 				m.setKey(keys[i]);
 				amazon.allFiles.add(m);
 			}
-		
+			
+			//this.attachmentService.
 			amazon.allFiles.add(amazonModel);
-			Advertisement advForElastic=advertisementService.findById(advertisement.getAdvertisementId());
-			
-			
+		
+			List<Attachment> att=this.attachmentService.findAllByAdvertisementId(advertisement.getAdvertisementId());
+			System.out.println(att.size());
+			advertisement.setAttachments(att);
+			this.elasticRep.save(advertisement);
 			 
 			 HttpEntity<AmazonModels> requestEntity =new HttpEntity<>(amazon);
 			 RestTemplate restTemplate = new RestTemplate();

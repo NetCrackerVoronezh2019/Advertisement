@@ -68,6 +68,7 @@ public class OrderService {
 		{
 			order.setCustomerId(notif.getAddresseeId());
 			order.setFreelancerId(notif.getSenderId());
+			
 		}
 		else
 		{

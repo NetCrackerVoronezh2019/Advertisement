@@ -60,7 +60,6 @@ public class AdvertisementModel {
 	}
 	
 	
-	
 	public List<String> getAttachments() {
 		return attachments;
 	}

@@ -33,15 +33,13 @@ public class AdvertisementElasticSearchService {
 									  map(e->e.getName().toLowerCase())
 								.collect(Collectors.toList());
 		
+		String text=".*"+filters.getSearchRow().toLowerCase()+".*";
     	QueryBuilder query3 =QueryBuilders
     			.boolQuery()
-    			.must(
-    					QueryBuilders.matchQuery("advertisementName", filters.getSearchRow())
-    					.fuzziness(Fuzziness.TWO)
-    					  .prefixLength(3)
-    					)
+    			.must(QueryBuilders.regexpQuery("advertisementName", text))
     		.must(QueryBuilders.rangeQuery("budget").from(filters.getMinPrice()).to(filters.getMaxPrice()))
     			.must(QueryBuilders.termsQuery("section",sections));
+    			//.must(QueryBuilders.terms)
     	
 
         NativeSearchQuery build = new NativeSearchQueryBuilder()

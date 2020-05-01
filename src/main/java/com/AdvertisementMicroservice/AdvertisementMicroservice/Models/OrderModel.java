@@ -24,7 +24,7 @@ public class OrderModel {
 	private String freelancerFIO;
 	private String customerFIO;
 	private String comment;
-	private Advertisement advertisement; 
+	private AdvertisementModel advertisement; 
 	
 	
 	
@@ -50,10 +50,10 @@ public class OrderModel {
 	}
 	
 	
-	public Advertisement getAdvertisement() {
+	public AdvertisementModel getAdvertisement() {
 		return advertisement;
 	}
-	public void setAdvertisement(Advertisement advertisement) {
+	public void setAdvertisement(AdvertisementModel advertisement) {
 		this.advertisement = advertisement;
 	}
 	public static OrderModel orderToOrderModel(Order order)
@@ -62,7 +62,7 @@ public class OrderModel {
 		model.setOrderId(order.getOrderId());
 		model.setCustomerId(order.getCustomerId());
 		model.setFreelancerId(order.getFreelancerId());
-		model.setAdvertisement(order.getAdvertisement());
+		model.setAdvertisement(AdvertisementModel.advertisementToModel(order.getAdvertisement()));
 		model.setStatus(order.getStatus());
 		model.setStarsForWork(order.getStarsForWork());
 		model.setNextStatus(nextOrderStatus(order.getStatus()));

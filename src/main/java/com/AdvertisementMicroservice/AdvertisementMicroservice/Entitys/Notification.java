@@ -1,6 +1,10 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name="NOTIFICATIONS")
@@ -24,6 +28,13 @@ public class Notification {
 	
 	@Column(name="ADDRESSEEID")
 	private Long addresseeId;
+	
+	@Column(name="CERTIFICATENAME")
+	private String certificateName;
+	
+	@Column(name="DATE")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	private LocalDateTime date;
 	
 	@Column(name="TYPE")
 	@Enumerated(EnumType.STRING)
@@ -54,6 +65,14 @@ public class Notification {
 	public void setResponseStatus(NotificationResponseStatus responseStatus) {
 		this.responseStatus = responseStatus;
 	}
+	
+	public LocalDateTime getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDateTime date) {
+		this.date = date;
+	}
 
 	public String getAdvertisementName() {
 		return advertisementName;
@@ -65,6 +84,16 @@ public class Notification {
 
 	public Long getNotificationId() {
 		return notificationId;
+	}
+
+	
+	
+	public String getCertificateName() {
+		return certificateName;
+	}
+
+	public void setCertificateName(String certificateName) {
+		this.certificateName = certificateName;
 	}
 
 	public void setNotificationId(Long notificationId) {

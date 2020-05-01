@@ -1,5 +1,6 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Controllers;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,10 +52,11 @@ public class OrderController {
 	
 	
 	@GetMapping("getFreelancerAllFeedBack/{freelancerId}")
-	public ResponseEntity<List<Order>> getFreelancerAllFeedBack(@PathVariable Long freelancerId)
+	public ResponseEntity<List<OrderModel>> getFreelancerAllFeedBack(@PathVariable Long freelancerId)
 	{
 		List<Order> allCompletedOrders = this.orderService.findAllFeedBackByFreelancerId(freelancerId);
-		return new ResponseEntity<>(allCompletedOrders,HttpStatus.OK);
+		List<OrderModel> orderModels=OrderModel.orderListToModelList(allCompletedOrders);
+		return new ResponseEntity<>(orderModels,HttpStatus.OK);
 	}
 
 	
@@ -102,25 +104,32 @@ public class OrderController {
 	@PostMapping("getUserOrdersByOrderStatus")
 	public ResponseEntity<List<OrderModel>> getMyOrdersByOrderStatus(@RequestBody MyOrderModel model)
 	{
-		List<OrderModel> models=null;
-		System.out.println(model.toString());
-		if(model.getRole().equals("ROLE_STUDENT"))
+		try
 		{
-			Optional<List<Order>> orders=this.orderService.findByCustomerIdAndOrderStatus(model.getMyId(), model.getStatus());
-			if(orders.isPresent())
-				models=OrderModel.orderListToModelList(orders.get());
-			return new ResponseEntity<>(models,HttpStatus.OK);
-		}
-		if(model.getRole().equals("ROLE_TEACHER"))
-		{
+			List<OrderModel> models=null;
+			System.out.println(model.toString());
+			if(model.getRole().equals("ROLE_STUDENT"))
+			{
+				Optional<List<Order>> orders=this.orderService.findByCustomerIdAndOrderStatus(model.getMyId(), model.getStatus());
+				if(orders.isPresent())
+					models=OrderModel.orderListToModelList(orders.get());
+				return new ResponseEntity<>(models,HttpStatus.OK);
+			}
+			if(model.getRole().equals("ROLE_TEACHER"))
+			{
+				
+				Optional<List<Order>> orders=this.orderService.findByFreelancerIdAndOrderStatus(model.getMyId(), model.getStatus());
+				if(orders.isPresent())
+					models=OrderModel.orderListToModelList(orders.get());
+				return new ResponseEntity<>(models,HttpStatus.OK);
+			}
 			
-			Optional<List<Order>> orders=this.orderService.findByFreelancerIdAndOrderStatus(model.getMyId(), model.getStatus());
-			if(orders.isPresent())
-				models=OrderModel.orderListToModelList(orders.get());
 			return new ResponseEntity<>(models,HttpStatus.OK);
 		}
-		
-		return new ResponseEntity<>(models,HttpStatus.OK);
+		catch(Exception ex)
+		{
+			return new ResponseEntity<>(null,HttpStatus.OK);
+		}
 	}
 	
 	
@@ -136,7 +145,7 @@ public class OrderController {
 	
 	
 	@PostMapping("changeRating")
-	public ResponseEntity<Order> changeRating(@RequestBody RatingNot model)
+	public ResponseEntity<OrderModel> changeRating(@RequestBody RatingNot model)
 	{
 	
 		Order order=orderService.findByOrder(model.getOrderId()).get();
@@ -150,10 +159,12 @@ public class OrderController {
 		not.setStatus(NotificationStatus.UNREADED);
 		not.setResponseStatus(NotificationResponseStatus.UNREADED);
 		not.setType(NotificationType.CHANGE_REITING);
+		not.setDate(LocalDateTime.now());
 		not.setOrderId(order.getOrderId());
 		not.setAdvertisementId(order.getAdvertisement().getAdvertisementId());
 		notService.save(not);
-		return new ResponseEntity<>(order,HttpStatus.OK);
+		OrderModel orderModel=OrderModel.orderToOrderModel(order);
+		return new ResponseEntity<>(orderModel,HttpStatus.OK);
 		
 	}
 	
@@ -175,7 +186,7 @@ public class OrderController {
 	
 	
 	@PostMapping("changeOrderStatus")
-	public ResponseEntity<Order> changeOrderStatus(@RequestBody ChangeOrderStatusModel model )
+	public ResponseEntity<OrderModel> changeOrderStatus(@RequestBody ChangeOrderStatusModel model )
 	{
 		Optional<Order> order=orderService.findByOrder(model.getOrderId());
 		Order o=order.get();
@@ -187,7 +198,8 @@ public class OrderController {
 				o=orderService.save(o);
 				Notification not=notService.generateOrderNotification(o.getStatus(),o.getOrderId());
 				notService.save(not);
-				return new ResponseEntity<>(o,HttpStatus.OK);
+				OrderModel orderModel=OrderModel.orderToOrderModel(o);
+				return new ResponseEntity<>(orderModel,HttpStatus.OK);
 				
 			}
 			else
@@ -200,7 +212,8 @@ public class OrderController {
 				{
 					o.setStatus(OrderModel.nextOrderStatus(o.getStatus()));;
 					orderService.save(o);
-					return new ResponseEntity<>(o,HttpStatus.OK);
+					OrderModel orderModel=OrderModel.orderToOrderModel(o);
+					return new ResponseEntity<>(orderModel,HttpStatus.OK);
 				}
 			}
 		

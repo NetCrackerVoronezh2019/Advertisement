@@ -1,5 +1,6 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,7 @@ public class NotificationService {
 	{
 		Notification newNotif=new Notification();
 		newNotif.setAddresseeId(notif.getSenderId());
+		newNotif.setDate(LocalDateTime.now());
 		newNotif.setSenderId(notif.getAddresseeId());
 		newNotif.setAdvertisementId(notif.getAdvertisementId());
 		newNotif.setStatus(NotificationStatus.UNREADED);
@@ -99,6 +101,7 @@ public class NotificationService {
 			n.setResponseStatus(NotificationResponseStatus.UNREADED);
 			Order order=orderService.findByOrder(orderId).get();
 			n.setAddresseeId(order.getCustomerId());
+			n.setDate(LocalDateTime.now());
 			n.setSenderId(order.getFreelancerId());
 		    n.setAdvertisementId(order.getAdvertisement().getAdvertisementId());
 			n.setOrderId(orderId);
@@ -112,6 +115,7 @@ public class NotificationService {
 			n.setResponseStatus(NotificationResponseStatus.UNREADED);
 			Order order=orderService.findByOrder(orderId).get();
 			n.setAddresseeId(order.getCustomerId());
+			n.setDate(LocalDateTime.now());
 			n.setSenderId(order.getFreelancerId());
 			 n.setAdvertisementId(order.getAdvertisement().getAdvertisementId());
 			n.setOrderId(orderId);
