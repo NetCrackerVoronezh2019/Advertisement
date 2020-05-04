@@ -25,26 +25,63 @@ public class AdvertisementElasticSearchService {
 	private AdvertisementElasticRepository elasticRep;
 	
 	
+	public Advertisement save(Advertisement adv)
+	{
+		return this.elasticRep.save(adv);
+	}
+	
+	
+	public Iterable<Advertisement> findAll()
+	{
+		return this.elasticRep.findAll();
+	}
+	
+	public void deleteAll()
+	{
+		this.elasticRep.deleteAll();
+	}
+	
 	public List<Advertisement> filter(AdvFilters filters)
 	{
+		QueryBuilder query;
 		List<String> sections=new ArrayList<>();
 		sections=filters.getSubjects().stream().
 									  filter(e->e.isChecked()==true).
 									  map(e->e.getName().toLowerCase())
 								.collect(Collectors.toList());
 		
-		String text=".*"+filters.getSearchRow().toLowerCase()+".*";
-    	QueryBuilder query3 =QueryBuilders
-    			.boolQuery()
-    			.must(QueryBuilders.regexpQuery("advertisementName", text))
-    		.must(QueryBuilders.rangeQuery("budget").from(filters.getMinPrice()).to(filters.getMaxPrice()))
-    			.must(QueryBuilders.termsQuery("section",sections));
-    			//.must(QueryBuilders.terms)
-    	
+		  List<String> tags=filters.getTags()
+ 				   .stream()
+ 				    .map(t->t.getName().toLowerCase())
+ 				    .collect(Collectors.toList());
+	  
+	  if(filters.getTags().size()!=0)
+	  {
+		  String text=".*"+filters.getSearchRow().toLowerCase()+".*";
+		  query =QueryBuilders
+	    			.boolQuery()
+	    			.must(QueryBuilders.regexpQuery("advertisementName", text))
+	    		.must(QueryBuilders.rangeQuery("budget").from(filters.getMinPrice()).to(filters.getMaxPrice()))
+	    			.must(QueryBuilders.termsQuery("section",sections))
+	    			.must(QueryBuilders.termsQuery("tags.name",tags));
+	    	
+	  }
+	  
+	  else
+	  {
+		  String text=".*"+filters.getSearchRow().toLowerCase()+".*";
+		  System.out.println(text);
+		  query =QueryBuilders
+	    			.boolQuery()
+	    			.must(QueryBuilders.regexpQuery("advertisementName", text))
+	    		.must(QueryBuilders.rangeQuery("budget").from(filters.getMinPrice()).to(filters.getMaxPrice()))
+	    			.must(QueryBuilders.termsQuery("section",sections));
+	    		
+	  }
+		
 
         NativeSearchQuery build = new NativeSearchQueryBuilder()
-                .withQuery(query3)
-                
+                .withQuery(query)
                 .build();
         return this.elasticRep.search(build).toList();
 	}

@@ -1,5 +1,5 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 
-public class Tag {
+public class TagModel {
 	public String name;
 }

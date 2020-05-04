@@ -12,7 +12,6 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AmazonModel;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.Tag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 
 @Entity
 @Table(name="ADVERTISEMENTS")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "advindex", type = "Advertisement")
+@org.springframework.data.elasticsearch.annotations.Document(indexName = "advindex22", type = "Advertisement22")
 public class Advertisement {
 
 	
@@ -68,8 +67,6 @@ public class Advertisement {
 	@Column(name="AUTHORID")
 	private Long authorId;
 	
-	@Column(name="TAGS")
-	private String tags;
 	
 	@Column(name="СOVERIMAGEKEY")
 	private String coverImageKey;
@@ -77,11 +74,33 @@ public class Advertisement {
 	 @OneToMany(mappedBy = "advertisement", fetch = FetchType.EAGER)
 	    private Collection<Attachment> attachments;
 	 
+	 @JsonIgnore
 	 @OneToMany(mappedBy = "advertisement", fetch = FetchType.LAZY)
 	    private Collection<Order> orders;
 	 
+	 @OneToMany(mappedBy = "advertisement", fetch = FetchType.LAZY)
+	    private Collection<Tag> tags;
 	 
-	 public List<String> sendAttachmentsKeys(){
+	 
+	 
+	 
+	 public Collection<Order> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(Collection<Order> orders) {
+		this.orders = orders;
+	}
+
+	public Collection<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(Collection<Tag> tags) {
+		this.tags = tags;
+	}
+
+	public List<String> sendAttachmentsKeys(){
 		 Collection<Attachment> att=this.getAttachments();
 		 if(att==null)
 			 return new ArrayList<String>();
@@ -102,26 +121,8 @@ public class Advertisement {
 	}
 
 	
-	public void setTagsAsArray(Tag[] tags)
-	{
-		
-		String allTags=new String();	
-		for(Tag tag:tags)
-		{
-			allTags+=tag.name+",";
-		}
-		
-		this.setTags(allTags);
-		
-		
-	}
 	
-	
-	public void setTags(String tags)
-	{
-		this.tags=tags;
-	}
-	
+
 	
 	public String[] getAttachmentKeys(List<AmazonModel> keys)
 	{
@@ -139,10 +140,6 @@ public class Advertisement {
 		return arr;
 	}
 	
-	public String getTags() {
-		System.out.println("STRING GET TAGS");
-		return tags;
-	}
 
 
 	public AdvertisementStatus getStatus() {

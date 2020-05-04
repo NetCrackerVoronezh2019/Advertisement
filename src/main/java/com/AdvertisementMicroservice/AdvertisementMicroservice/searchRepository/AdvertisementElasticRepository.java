@@ -9,4 +9,6 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertise
 
 public interface AdvertisementElasticRepository extends ElasticsearchRepository<Advertisement,Long> {
 
+	
+	
 }

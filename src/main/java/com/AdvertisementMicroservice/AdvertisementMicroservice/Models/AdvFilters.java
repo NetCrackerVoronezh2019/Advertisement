@@ -3,6 +3,7 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 import java.util.List;
 
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.AdvertisementType;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Tag;
 
 public class AdvFilters {
 

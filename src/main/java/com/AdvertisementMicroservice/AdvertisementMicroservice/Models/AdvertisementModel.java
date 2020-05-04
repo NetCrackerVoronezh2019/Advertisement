@@ -2,9 +2,12 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertisement;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Attachment;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Tag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -23,7 +26,7 @@ public class AdvertisementModel {
 	private AmazonModel coverImage;
 	public String coverImageKey;
 	private Tag[] tags;
-	public List<String> attachments;
+	public Collection<Attachment> attachments;
 	private List<AmazonModel> allFiles;
 	
 	public static AdvertisementModel advertisementToModel(Advertisement adv)
@@ -38,8 +41,8 @@ public class AdvertisementModel {
 		model.setBudget(adv.getBudget());
 		model.setSection(adv.getSection());
 		model.setCoverImageKey(adv.getCoverImageKey());
-		model.setTags(getTagsArray(adv.getTags()));
-		model.setAttachments(adv.sendAttachmentsKeys());
+	//	model.setTags(getTagsArray(adv.getTags()));
+		model.setAttachments(adv.getAttachments());
 		
 		return model;
 			
@@ -60,32 +63,16 @@ public class AdvertisementModel {
 	}
 	
 	
-	public List<String> getAttachments() {
+	
+	public Collection<Attachment> getAttachments() {
 		return attachments;
 	}
 
 
-
-	public void setAttachments(List<String> attachments) {
+	public void setAttachments(Collection<Attachment> attachments) {
 		this.attachments = attachments;
 	}
 
-
-
-	public static Tag[] getTagsArray(String _tags)
-	{
-	   if(_tags==null)
-		   return new Tag[0];
-	   String[] t=_tags.split(",");
-	   Tag[] tags=new Tag[t.length];
-	   for(int i=0; i<t.length;i++)
-	   {
-		   tags[i]=new Tag();
-		   tags[i].name=t[i];
-	   }
-	   return tags;   
-	}
-	
 
 	public String getCoverImageKey() {
 		return coverImageKey;

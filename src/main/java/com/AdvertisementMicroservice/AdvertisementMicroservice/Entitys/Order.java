@@ -34,6 +34,7 @@ public class Order {
 	private double starsForWork;
 	
 
+
 	@ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "ADVERTISEMENTID")
     private Advertisement advertisement;

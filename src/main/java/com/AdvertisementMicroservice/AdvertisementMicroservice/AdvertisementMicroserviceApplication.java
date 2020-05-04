@@ -12,7 +12,7 @@ public class AdvertisementMicroserviceApplication {
 		
 		ConfigurableApplicationContext app=SpringApplication.run(AdvertisementMicroserviceApplication.class, args);
 		
-		/*
+		try {
 		ConsumerThreadService threadService = (ConsumerThreadService) app.getBean("consumerThreadService");		
 		Utility utility=(Utility) app.getBean("utility");	
 	    utility.sendInfoModelToConfig("http://localhost:7082/setInfoModel");
@@ -20,8 +20,13 @@ public class AdvertisementMicroserviceApplication {
 	    Thread subjectThread =new Thread(threadService.subjectRunnable());
 	    microserviceInfoThread.start();
 	    subjectThread.start();	
-	    */
-	    
 		}
+		catch(Exception ex)
+		{
+			
+		}
+		
+		
+	}
 
 }

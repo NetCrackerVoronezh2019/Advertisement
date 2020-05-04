@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix="microservices")
 public class Microservices {
+	
 	private String mainPort;
 	private String advertismentPort;
 	private String amazonPort;

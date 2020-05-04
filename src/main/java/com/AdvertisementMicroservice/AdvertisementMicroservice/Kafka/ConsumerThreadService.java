@@ -50,7 +50,8 @@ public class ConsumerThreadService {
 	@PostConstruct
 	public void init()
 	{
-		String bootstrapServers1="192.168.99.100:9092";
+		try {
+		String bootstrapServers1="192.168.99.102:9092";
     	Properties properties1=new Properties();
     	properties1.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,bootstrapServers1);
     	properties1.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
@@ -69,6 +70,8 @@ public class ConsumerThreadService {
     	properties2.setProperty(ConsumerConfig.GROUP_ID_CONFIG, this.subjectsTopicGroup);
     	this.subjectConsumer=new KafkaConsumer<String,String>(properties2);
     	this.subjectConsumer.subscribe(Arrays.asList(this.subjectsTopic));
+		}
+		catch(Exception ex) {}
 	}
 	public Runnable microserviceInfoRunnable()
 	{
@@ -91,6 +94,7 @@ public class ConsumerThreadService {
         		}
         		finally
         		{
+        			microserviceInfoConsumer.unsubscribe();
         			microserviceInfoConsumer.close();
         			
         		}
@@ -122,6 +126,7 @@ public class ConsumerThreadService {
         		}
         		finally
         		{
+        			subjectConsumer.unsubscribe();
         			subjectConsumer.close();
         			
         		}

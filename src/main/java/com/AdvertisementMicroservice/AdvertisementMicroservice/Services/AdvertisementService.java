@@ -15,7 +15,6 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertise
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.AdvertisementStatus;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AdvFilters;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.SubjectModel;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.Tag;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.AdvertisementRepository;
 
 @Service

@@ -41,7 +41,7 @@ public class ElasticsearchConfiguration {
     	 
     	@SuppressWarnings("resource")
 		TransportClient client = new PreBuiltTransportClient(esSettings)
-    	        .addTransportAddress(new TransportAddress(InetAddress.getByName("192.168.99.100"), 9300));
+    	        .addTransportAddress(new TransportAddress(InetAddress.getByName("192.168.99.102"), 9300));
     return client;
     }
 
