@@ -86,6 +86,10 @@ public class NotificationController {
 			not.setStatus(NotificationStatus.UNREADED);
 			not.setResponseStatus(NotificationResponseStatus.UNREADED);
 			not.setDate(LocalDateTime.now());
+			if(model.getType()==NotificationType.ACCEPTED_CERTIFICATION)
+				not.setMessage("принял ваш сертификат");
+			else
+				not.setMessage("отклонил ваш сертификат");
 			this.notifService.save(not);
 		}
 		
@@ -114,7 +118,11 @@ public class NotificationController {
 		notif.setStatus(NotificationStatus.UNREADED);
 		notif.setResponseStatus(NotificationResponseStatus.UNREADED);
 		notif.setDate(LocalDateTime.now());
-		System.out.println("name "+notif.getAdvertisementName());
+		if(notif.getType()==NotificationType.RECEIVE_SERVICE)
+			notif.setMessage("хочет получить услугу");
+		if(notif.getType()==NotificationType.TAKE_ADVERTISEMENT)
+			notif.setMessage("хочет получить заказ");
+		notif.setMessage("хочет получить услугу");
 		notifService.save(notif);
 		return new ResponseEntity<>(null,HttpStatus.OK);
 	}
@@ -132,7 +140,8 @@ public class NotificationController {
 		{
 			FullNotificationModel fm=new FullNotificationModel();
 			if(n.getType()!=NotificationType.ACCEPTED_CERTIFICATION
-					&& n.getType()!=NotificationType.REJECTED_CERTIFICATION)
+					&& n.getType()!=NotificationType.REJECTED_CERTIFICATION
+					&& n.getType()!=NotificationType.DELETE_ADVERTISEMENT)
 			{
 			Advertisement adv=advs.stream().filter(a->a.getAdvertisementId().equals(n.getAdvertisementId()))
 											.findFirst().get();

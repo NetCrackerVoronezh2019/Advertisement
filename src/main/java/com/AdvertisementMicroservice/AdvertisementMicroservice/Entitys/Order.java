@@ -1,10 +1,11 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys;
 
+import java.util.Collection;
+import java.util.List;
+
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-
 
 @Entity
 @Table(name="ORDERS")
@@ -25,22 +26,29 @@ public class Order {
 	@Enumerated(EnumType.STRING)
 	private OrderStatus status;
 	
-	
-	
 	@Column(name="COMMENT")
 	private String comment;
 	
 	@Column(name="STARSFORWORK")
 	private double starsForWork;
 	
-
-
 	@ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "ADVERTISEMENTID")
     private Advertisement advertisement;
 
 	
+	 @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+	    private List<OrderDocument> orderDocuments;
 	
+	
+	public List<OrderDocument> getOrderDocuments() {
+		return orderDocuments;
+	}
+
+	public void setOrderDocuments(List<OrderDocument> orderDocuments) {
+		this.orderDocuments = orderDocuments;
+	}
+
 	public Advertisement getAdvertisement() {
 		return advertisement;
 	}

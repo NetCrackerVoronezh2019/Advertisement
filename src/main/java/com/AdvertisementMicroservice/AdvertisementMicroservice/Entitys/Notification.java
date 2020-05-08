@@ -50,6 +50,19 @@ public class Notification {
 	private NotificationResponseStatus responseStatus;
 	
 	
+	@Column(name="MESSAGE")
+	private String message;
+	
+	
+	
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
 	public NotificationStatus getStatus() {
 		return status;
 	}

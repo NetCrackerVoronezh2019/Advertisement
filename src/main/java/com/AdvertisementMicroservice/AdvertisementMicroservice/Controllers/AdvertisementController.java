@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,8 @@ public class AdvertisementController {
 	@Autowired
 	private  SubjectService subjectService;
 	
+	@Autowired 
+	private NotificationService notifService;
 	
 	@Autowired
 	private AdvertisementElasticRepository elasticRep;
@@ -46,22 +50,18 @@ public class AdvertisementController {
 	public ResponseEntity<List<Advertisement>> filterAdvertisements(@RequestBody AdvFilters advFilters)
 	{
 		List<Advertisement> advs=this.elasticService.filter(advFilters);
-		
-		//List<AdvertisementModel> models=AdvertisementModel.advListToModelList(advs);
+
 		return new ResponseEntity<>(advs,HttpStatus.OK);
-		
-		
 	}
 	
 	
-	/*
-	@GetMapping("filter")
-	public List<Advertisement> filter()
+	@PostMapping("addNewSubject")
+	public ResponseEntity<Subject> addNewSubject(@RequestBody Subject subject)
 	{
-		return  this.elasticService.filter();
+		subject=subjectService.save(subject);
+		
+		return new ResponseEntity<>(subject,HttpStatus.OK);
 	}
-	
-	*/
 	
 	
 	@GetMapping("allAdvBabe")
@@ -78,7 +78,7 @@ public class AdvertisementController {
 	}
 	
 	@GetMapping("delete")
-	public void fdfgndg()
+	public void delete()
 	{
 		this.elasticService.deleteAll();
 	}
@@ -92,9 +92,44 @@ public class AdvertisementController {
 	public ResponseEntity<List<Advertisement>> getAllAdvertisements()
 	{
 		List<Advertisement> advs=advertisementService.findAll();
+		if(advs!=null)
+		{
+			advs=advs.stream()
+				.filter(adv->adv.getStatus()==AdvertisementStatus.ACTIVE)
+				.collect(Collectors.toList());
+		}
 	
+		System.out.println(advs.size());
 		return new ResponseEntity<>(advs,HttpStatus.OK);
 		
+	}
+	
+	
+	@GetMapping("changeAdvStatus/{advId}/{status}")
+	public ResponseEntity<?> changeAdvertisementStatus(@PathVariable Long advId,@PathVariable AdvertisementStatus status)
+	{
+		
+	   Advertisement adv=this.advertisementService.changeAdvertisementStatus(advId, status);
+	   
+	   return new ResponseEntity<>(adv,HttpStatus.OK);
+	}
+	
+	@GetMapping("deleteAdvertisement/{id}/{comment}")
+	public ResponseEntity<?> deleteAdvertisement(@PathVariable Long id,@PathVariable String comment)
+	{
+		Advertisement adv=this.advertisementService.findById(id);
+		adv.setStatus(AdvertisementStatus.DELETED);
+		this.advertisementService.save(adv);
+		Long userId= adv.getAuthorId();
+		Notification notif=new Notification();
+		notif.setAddresseeId(userId);
+		notif.setDate(LocalDateTime.now());
+		notif.setType(NotificationType.DELETE_ADVERTISEMENT);
+		String message="Вашe объявление удалено,причина - "+comment;
+		notif.setMessage(message);
+		this.notifService.save(notif);
+		return new ResponseEntity<>(null,HttpStatus.OK);
+	
 	}
 	
 	
@@ -181,10 +216,8 @@ public class AdvertisementController {
 		{
 			
 		
-		 }			
-			
-		 
-		 
+		}			
+			 
 		return new ResponseEntity<>(true,HttpStatus.OK);
 		
 	}

@@ -40,5 +40,10 @@ public class SubjectService {
 		return subjectRepository.findByName(_name);
 	}
 	
+	public Subject save(Subject subject)
+	{
+		return this.subjectRepository.save(subject);
+	}
+	
 
 }

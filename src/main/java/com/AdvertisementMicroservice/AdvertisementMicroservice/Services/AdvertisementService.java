@@ -30,6 +30,19 @@ public class AdvertisementService {
 		return advRep.existsById(id);
 	}
 	
+	public Advertisement changeAdvertisementStatus(Long advId,AdvertisementStatus status)
+	{
+		Optional<Advertisement> advOpt=advRep.findById(advId);
+		if(advOpt.isPresent())
+		{	
+			Advertisement adv=advOpt.get();
+			adv.setStatus(status);
+			adv=advRep.save(adv);
+			return adv;
+		}
+		return null;
+	}
+	
 	
 	public Boolean is(Long userId,Long advId)
 	{

@@ -14,6 +14,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.stereotype.*;
 
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertisement;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.AdvertisementStatus;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AdvFilters;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.searchRepository.AdvertisementElasticRepository;
 
@@ -60,10 +61,13 @@ public class AdvertisementElasticSearchService {
 		  String text=".*"+filters.getSearchRow().toLowerCase()+".*";
 		  query =QueryBuilders
 	    			.boolQuery()
+	    			.must(QueryBuilders.matchQuery("status",AdvertisementStatus.ACTIVE.toString().toLowerCase()))
 	    			.must(QueryBuilders.regexpQuery("advertisementName", text))
-	    		.must(QueryBuilders.rangeQuery("budget").from(filters.getMinPrice()).to(filters.getMaxPrice()))
+	    			.must(QueryBuilders.rangeQuery("budget").from(filters.getMinPrice()).to(filters.getMaxPrice()))
 	    			.must(QueryBuilders.termsQuery("section",sections))
 	    			.must(QueryBuilders.termsQuery("tags.name",tags));
+		  			
+		  			
 	    	
 	  }
 	  

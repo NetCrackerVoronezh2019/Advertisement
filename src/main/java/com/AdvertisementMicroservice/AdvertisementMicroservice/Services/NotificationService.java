@@ -73,18 +73,30 @@ public class NotificationService {
 		if(notif.getType()==NotificationType.TAKE_ADVERTISEMENT)
 		{
 			if(notif.getResponseStatus()==NotificationResponseStatus.ACCEPTED)
+			{
+				newNotif.setMessage("принял ваш запрос");
 				newNotif.setType(NotificationType.ACCEPTED_TAKE_ADVERTISEMENT);
+			}
 			if(notif.getResponseStatus()==NotificationResponseStatus.REJECTED)
+			{
+				newNotif.setMessage("отклонил ваш запрос");
 				newNotif.setType(NotificationType.REJECTED_TAKE_ADVERTISEMENT);
+			}
 		}
 		else
 		{
 			if(notif.getType()==NotificationType.RECEIVE_SERVICE)
 			{
 				if(notif.getResponseStatus()==NotificationResponseStatus.ACCEPTED)
+				{
+					newNotif.setMessage("готов оказать услугу");
 					newNotif.setType(NotificationType.ACCEPTED_RECEIVE_SERVICE);
+				}
 				if(notif.getResponseStatus()==NotificationResponseStatus.REJECTED)
+				{
+					newNotif.setMessage("не готов оказать услугу");
 					newNotif.setType(NotificationType.REJECTED_RECEIVE_SERVICE);
+				}
 			}
 		}
 		return newNotif;
@@ -97,6 +109,7 @@ public class NotificationService {
 		if(status==OrderStatus.INPROGRESS)
 		{
 			n.setType(NotificationType.CHANGE_ORDER_STATUS_TO_INPROGRESS);
+			n.setMessage("изменил статус заказа на <<в процессе>>");
 			n.setStatus(NotificationStatus.UNREADED);
 			n.setResponseStatus(NotificationResponseStatus.UNREADED);
 			Order order=orderService.findByOrder(orderId).get();
@@ -111,6 +124,7 @@ public class NotificationService {
 		if(status==OrderStatus.СOMPLETED)
 		{
 			n.setType(NotificationType.CHANGE_ORDER_STATUS_TO_COMPLETED);
+			n.setMessage("изменил статус заказа на <<завершен>>");
 			n.setStatus(NotificationStatus.UNREADED);
 			n.setResponseStatus(NotificationResponseStatus.UNREADED);
 			Order order=orderService.findByOrder(orderId).get();

@@ -21,9 +21,12 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Notificat
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationStatus;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationType;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderDocument;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AmazonModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeOrderStatusModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeRatingModel;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.CompleteOrderModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.MyOrderModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.MyOrdersModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.OrderModel;
@@ -32,6 +35,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.isMyOrderM
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.OrderRepository;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.AdvertisementService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.NotificationService;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderDocumentService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderService;
 
 @RestController
@@ -49,7 +53,31 @@ public class OrderController {
 	@Autowired
 	private AdvertisementService advService;
 	
+	@Autowired 
+	private OrderDocumentService orderDocumentService;
 	
+	@PostMapping("completeOrder")
+	public ResponseEntity<?> completeOrder(@RequestBody CompleteOrderModel model)
+	{
+		Optional<Order> orderOptional=orderService.findByOrder(model.getOrderId());
+		Order order=orderOptional.get();
+		order.setStatus(OrderStatus.СOMPLETED);
+		order=this.orderService.save(order);
+		
+		for(int i=0;i<model.getAllFiles().size();i++)
+		{
+			OrderDocument orderDoc=new OrderDocument();
+			orderDoc.setDocumentKey("order_"+order.getOrderId()+"document_"+i);
+			orderDoc.setOrder(order);
+			orderDoc.setDocumentName(model.getAllFiles().get(i).getName());
+			this.orderDocumentService.save(orderDoc);
+		}
+		
+		Notification not=notService.generateOrderNotification(order.getStatus(),order.getOrderId());
+		notService.save(not);
+		
+		return new ResponseEntity<>(null,HttpStatus.OK);
+	}
 	
 	@GetMapping("getFreelancerAllFeedBack/{freelancerId}")
 	public ResponseEntity<List<OrderModel>> getFreelancerAllFeedBack(@PathVariable Long freelancerId)
@@ -159,6 +187,7 @@ public class OrderController {
 		not.setStatus(NotificationStatus.UNREADED);
 		not.setResponseStatus(NotificationResponseStatus.UNREADED);
 		not.setType(NotificationType.CHANGE_REITING);
+		not.setMessage("оценил вашу работу");
 		not.setDate(LocalDateTime.now());
 		not.setOrderId(order.getOrderId());
 		not.setAdvertisementId(order.getAdvertisement().getAdvertisementId());

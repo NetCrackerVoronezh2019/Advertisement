@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertisement;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderDocument;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
 
 public class OrderModel {
@@ -25,9 +26,16 @@ public class OrderModel {
 	private String customerFIO;
 	private String comment;
 	private AdvertisementModel advertisement; 
+	private List<OrderDocument> orderDocuments;
 	
 	
 	
+	public List<OrderDocument> getOrderDocuments() {
+		return orderDocuments;
+	}
+	public void setOrderDocuments(List<OrderDocument> orderDocuments) {
+		this.orderDocuments = orderDocuments;
+	}
 	public String getFreelancerFIO() {
 		return freelancerFIO;
 	}
@@ -67,6 +75,7 @@ public class OrderModel {
 		model.setStarsForWork(order.getStarsForWork());
 		model.setNextStatus(nextOrderStatus(order.getStatus()));
 		model.setComment(order.getComment());
+		model.setOrderDocuments(order.getOrderDocuments());
 		return model;
 	}
 	
