@@ -20,7 +20,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.searchRepository.
 
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin("https://helpui.herokuapp.com")
 public class AdvertisementController {
 
 	

@@ -45,7 +45,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderDoc
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderService;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin("https://helpui.herokuapp.com")
 public class OrderController {
 
 	@Autowired

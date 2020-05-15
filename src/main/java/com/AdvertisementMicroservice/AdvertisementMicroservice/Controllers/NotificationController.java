@@ -34,7 +34,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderSer
 
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin("https://helpui.herokuapp.com")
 public class NotificationController {
 	
 	@Autowired 
