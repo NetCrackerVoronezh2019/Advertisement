@@ -77,8 +77,9 @@ public class AdvertisementElasticSearchService {
 		  System.out.println(text);
 		  query =QueryBuilders
 	    			.boolQuery()
+	    			.must(QueryBuilders.matchQuery("status",AdvertisementStatus.ACTIVE.toString().toLowerCase()))
 	    			.must(QueryBuilders.regexpQuery("advertisementName", text))
-	    		.must(QueryBuilders.rangeQuery("budget").from(filters.getMinPrice()).to(filters.getMaxPrice()))
+	    			.must(QueryBuilders.rangeQuery("budget").from(filters.getMinPrice()).to(filters.getMaxPrice()))
 	    			.must(QueryBuilders.termsQuery("section",sections));
 	    		
 	  }

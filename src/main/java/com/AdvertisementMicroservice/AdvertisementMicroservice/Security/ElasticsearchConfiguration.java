@@ -35,8 +35,6 @@ public class ElasticsearchConfiguration {
     	
     	 Settings esSettings = Settings.builder()
                  .put("cluster.name", "mycluster")
-
-                 //.put("node.name","4ca16122605d")
                  .build();
     	 
     	@SuppressWarnings("resource")

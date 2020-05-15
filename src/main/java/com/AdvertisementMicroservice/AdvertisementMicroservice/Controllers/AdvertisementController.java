@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.*;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Tag;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Kafka.Microservices;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.*;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.AttachmentRepository;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.*;
@@ -44,6 +45,9 @@ public class AdvertisementController {
 	
 	@Autowired 
 	private TagService tagService;
+	
+	@Autowired
+	private Microservices microservices;
 		
 	
 	@PostMapping("filterAdvertisements")
@@ -68,8 +72,8 @@ public class AdvertisementController {
 	public List<Advertisement> allAdvBabe()
 	{
 		List<Advertisement> documents = new ArrayList<>();
-        // iterate all documents and add it to list
-		System.out.println("ddfdsfsf");
+    
+		
         for (Advertisement doc : this.elasticRep.findAll()) {
         	System.out.println("ddfdsfsf");
             documents.add(doc);
@@ -122,11 +126,18 @@ public class AdvertisementController {
 		this.advertisementService.save(adv);
 		Long userId= adv.getAuthorId();
 		Notification notif=new Notification();
+		notif.setResponseStatus(NotificationResponseStatus.UNREADED);
+		notif.setStatus(NotificationStatus.UNREADED);
 		notif.setAddresseeId(userId);
 		notif.setDate(LocalDateTime.now());
 		notif.setType(NotificationType.DELETE_ADVERTISEMENT);
-		String message="Вашe объявление удалено,причина - "+comment;
+		String message="Объявление удалено администратором,причина - "+comment;
 		notif.setMessage(message);
+		try
+		{
+			this.elasticService.save(adv);
+		}
+		catch(Exception ex) {}
 		this.notifService.save(notif);
 		return new ResponseEntity<>(null,HttpStatus.OK);
 	
@@ -161,7 +172,8 @@ public class AdvertisementController {
 	{
 		
 		adv.setDateOfPublication(LocalDateTime.now());
-		Advertisement advertisement=ModelUtils.AdvertisementModelToEntity(adv);
+		Subject subject=this.subjectService.getByName(adv.getSection());
+		Advertisement advertisement=ModelUtils.AdvertisementModelToEntity(adv,subject.getTranslateName());
 		advertisement.setStatus(AdvertisementStatus.ACTIVE);
 		
 		if(adv.getAuthorRole().equals("ROLE_STUDENT"))
@@ -188,8 +200,10 @@ public class AdvertisementController {
 		List<Tag> tags=this.tagService.findAllByAdvId(advertisement.getAdvertisementId());
 		
 		advertisement.setTags(tags);
+		try {
 		this.elasticService.save(advertisement);
-		 
+		}
+		catch(Exception ex) {}
 		AmazonModels amazon=new AmazonModels();
 		if(keys.length!=0)
 		{
@@ -208,9 +222,11 @@ public class AdvertisementController {
 		amazon.allFiles.add(amazonModel);
 		HttpEntity<AmazonModels> requestEntity =new HttpEntity<>(amazon);
 		RestTemplate restTemplate = new RestTemplate();
+	    String host=microservices.getHost();
+	    String port=microservices.getAmazonPort();
 		try 
 		{
-		   ResponseEntity<Object> res=restTemplate.exchange("http://localhost:1234/uploadAdvertisementFiles",HttpMethod.POST,requestEntity,Object.class);
+		   ResponseEntity<Object> res=restTemplate.exchange("http://"+host+":"+port+"/uploadAdvertisementFiles",HttpMethod.POST,requestEntity,Object.class);
 		}
 		catch(Exception ex)
 		{

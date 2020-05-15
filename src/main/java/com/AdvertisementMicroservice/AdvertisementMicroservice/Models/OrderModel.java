@@ -25,6 +25,7 @@ public class OrderModel {
 	private String freelancerFIO;
 	private String customerFIO;
 	private String comment;
+	private Integer chatId;
 	private AdvertisementModel advertisement; 
 	private List<OrderDocument> orderDocuments;
 	
@@ -58,6 +59,12 @@ public class OrderModel {
 	}
 	
 	
+	public Integer getChatId() {
+		return chatId;
+	}
+	public void setChatId(Integer chatId) {
+		this.chatId = chatId;
+	}
 	public AdvertisementModel getAdvertisement() {
 		return advertisement;
 	}
@@ -75,6 +82,7 @@ public class OrderModel {
 		model.setStarsForWork(order.getStarsForWork());
 		model.setNextStatus(nextOrderStatus(order.getStatus()));
 		model.setComment(order.getComment());
+		model.setChatId(order.getChateId());
 		model.setOrderDocuments(order.getOrderDocuments());
 		return model;
 	}

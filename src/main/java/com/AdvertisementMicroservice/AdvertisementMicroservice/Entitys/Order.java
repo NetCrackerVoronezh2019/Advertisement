@@ -32,6 +32,9 @@ public class Order {
 	@Column(name="STARSFORWORK")
 	private double starsForWork;
 	
+	@Column(name="CHATID")
+	private Integer chateId;
+	
 	@ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "ADVERTISEMENTID")
     private Advertisement advertisement;
@@ -55,6 +58,14 @@ public class Order {
 
 	public void setAdvertisement(Advertisement advertisement) {
 		this.advertisement = advertisement;
+	}
+
+	public Integer getChateId() {
+		return chateId;
+	}
+
+	public void setChateId(Integer chateId) {
+		this.chateId = chateId;
 	}
 
 	public String getComment() {

@@ -25,6 +25,12 @@ public class MicroserviceInfo {
 	public void setToken(String token) {
 		this.token = token;
 	}
+	@Override
+	public String toString() {
+		return "MicroserviceInfo [microserviceName=" + microserviceName + ", port=" + port + ", token=" + token + "]";
+	}
+	
+	
 	
 	
 }

@@ -12,9 +12,12 @@ import javax.validation.constraints.NotNull;
 
 import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Notification;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationResponseStatus;
@@ -23,10 +26,13 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Notificat
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderDocument;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Kafka.Microservices;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AmazonModel;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AmazonModels;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeOrderStatusModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeRatingModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.CompleteOrderModel;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.DeleteKeys;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.MyOrderModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.MyOrdersModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.OrderModel;
@@ -56,26 +62,67 @@ public class OrderController {
 	@Autowired 
 	private OrderDocumentService orderDocumentService;
 	
+	@Autowired
+	private Microservices microservices;
+		
+	
+	@PostMapping("deleteOrderAttachments")
+	public ResponseEntity<?> deleteOrderAttachments(@RequestBody DeleteKeys model)
+	{
+		List<String> keys=model.getKeys();
+	    if(keys!=null)
+	    {
+	    	for(String key:keys)
+	    		this.orderDocumentService.deleteDocumentByKey(key);
+	    }
+	    
+	    return new ResponseEntity<>(null,HttpStatus.OK);
+	}
 	@PostMapping("completeOrder")
 	public ResponseEntity<?> completeOrder(@RequestBody CompleteOrderModel model)
 	{
 		Optional<Order> orderOptional=orderService.findByOrder(model.getOrderId());
 		Order order=orderOptional.get();
-		order.setStatus(OrderStatus.СOMPLETED);
-		order=this.orderService.save(order);
-		
-		for(int i=0;i<model.getAllFiles().size();i++)
+		AmazonModels amazon=new AmazonModels();
+		amazon.allFiles=model.getAllFiles();
+		List<OrderDocument> docs=order.getOrderDocuments();
+		int m=0;
+		int n=0;
+		int l=0;
+		if(docs==null)
+		{
+			m=0;
+			n=model.getAllFiles().size();
+		}
+		else
+		{
+			m=docs.size();
+			n=m+model.getAllFiles().size();
+		}
+		for(int i=m;i<n;i++)
 		{
 			OrderDocument orderDoc=new OrderDocument();
 			orderDoc.setDocumentKey("order_"+order.getOrderId()+"document_"+i);
 			orderDoc.setOrder(order);
-			orderDoc.setDocumentName(model.getAllFiles().get(i).getName());
+			orderDoc.setDocumentName(model.getAllFiles().get(l).getName());
 			this.orderDocumentService.save(orderDoc);
+			amazon.allFiles.get(l).setKey(orderDoc.getDocumentKey());
+			l++;
 		}
 		
-		Notification not=notService.generateOrderNotification(order.getStatus(),order.getOrderId());
-		notService.save(not);
+		HttpEntity<AmazonModels> requestEntity =new HttpEntity<>(amazon);
+		RestTemplate restTemplate = new RestTemplate();
+		String host=microservices.getHost();
+		String port=microservices.getAmazonPort();
+		try 
+		{
+		   ResponseEntity<Object> res=restTemplate.exchange("http://"+host+":"+port+"/uploadAdvertisementFiles",HttpMethod.POST,requestEntity,Object.class);
+		}
+		catch(Exception ex)
+		{
+			
 		
+		}	
 		return new ResponseEntity<>(null,HttpStatus.OK);
 	}
 	

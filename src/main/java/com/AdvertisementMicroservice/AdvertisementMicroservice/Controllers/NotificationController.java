@@ -13,17 +13,20 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Advertisement;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.AdvertisementStatus;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Notification;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationResponseStatus;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationStatus;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationType;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Kafka.Microservices;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.CertificationNotModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.FullNotificationModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.SendAdvertisementNotificationModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.NotificationRepository;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.OrderRepository;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.AdvertisementElasticSearchService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.AdvertisementService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.NotificationService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderService;
@@ -43,7 +46,12 @@ public class NotificationController {
 	@Autowired 
 	private AdvertisementService advService;
 	
+	@Autowired 
+	private AdvertisementElasticSearchService elasticService;
 	
+	@Autowired
+	private Microservices microservices;
+		
 	
 	@GetMapping("getCommonNots/{senderId}/{addresseeId}")
 	public ResponseEntity<List<FullNotificationModel>> getCommonNots(@PathVariable Long senderId,@PathVariable Long addresseeId)
@@ -175,19 +183,25 @@ public class NotificationController {
 		if(notif.getResponseStatus()==NotificationResponseStatus.ACCEPTED)
 		{
 			newNotif=notifService.generateResponseNotification(notif);
+			Advertisement adv=this.advService.findById(notif.getAdvertisementId());
+			adv.setStatus(AdvertisementStatus.ARCHIVED);
+			this.advService.save(adv);
+			this.elasticService.save(adv);
 			Order order=orderService.generateOrder(notif);
 			notifService.save(newNotif);
-			Advertisement adv=advService.findById(notif.getAdvertisementId());
 			order.setAdvertisement(adv);
-			orderService.save(order);
-	
+			order=orderService.save(order);
+			String port=microservices.getConversationPort();
+			String host=microservices.getHost();
 			try {
-				UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088//advertisement/createDialog").
+				UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://"+host+":"+port+"//advertisement/createDialog").
 						queryParam("creatorId",notif.getSenderId())
 						.queryParam("userId",notif.getAddresseeId())
 						.queryParam("advertisementName",adv.getAdvertisementName());
 				RestTemplate restTemplate = new RestTemplate();
 				ResponseEntity<Integer> res=restTemplate.exchange(uriBuilder.build().encode().toUri(),HttpMethod.POST,null,new ParameterizedTypeReference<Integer>(){});
+				order.setChateId(res.getBody());
+				orderService.save(order);
 			}
 			catch(Exception ex)
 			{
