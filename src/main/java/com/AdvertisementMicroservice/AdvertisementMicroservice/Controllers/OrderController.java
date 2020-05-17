@@ -45,7 +45,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderDoc
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderService;
 
 @RestController
-@CrossOrigin("https://helpui.herokuapp.com")
+@CrossOrigin("http://localhost:4200")
 public class OrderController {
 
 	@Autowired
@@ -179,7 +179,7 @@ public class OrderController {
 	@PostMapping("getUserOrdersByOrderStatus")
 	public ResponseEntity<List<OrderModel>> getMyOrdersByOrderStatus(@RequestBody MyOrderModel model)
 	{
-		try  // 
+		try 
 		{
 			List<OrderModel> models=null;
 			System.out.println(model.toString());
