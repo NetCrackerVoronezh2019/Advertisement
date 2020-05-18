@@ -34,7 +34,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderSer
 
 
 @RestController
-@CrossOrigin("https://helpui.herokuapp.com")
+@CrossOrigin("http://localhost:4200")
 public class NotificationController {
 	
 	@Autowired 
@@ -186,7 +186,11 @@ public class NotificationController {
 			Advertisement adv=this.advService.findById(notif.getAdvertisementId());
 			adv.setStatus(AdvertisementStatus.ARCHIVED);
 			this.advService.save(adv);
-			this.elasticService.save(adv);
+			try
+			{
+				this.elasticService.save(adv);
+			}
+			catch(Exception ex) {}
 			Order order=orderService.generateOrder(notif);
 			notifService.save(newNotif);
 			order.setAdvertisement(adv);

@@ -20,7 +20,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.searchRepository.
 
 
 @RestController
-@CrossOrigin("https://helpui.herokuapp.com")
+@CrossOrigin("http://localhost:4200")
 public class AdvertisementController {
 
 	
@@ -119,7 +119,7 @@ public class AdvertisementController {
 	}
 	
 	@GetMapping("deleteAdvertisement/{id}/{comment}")
-	public ResponseEntity<?> deleteAdvertisement(@PathVariable Long id,@PathVariable String comment)
+	public ResponseEntity<Long> deleteAdvertisement(@PathVariable Long id,@PathVariable String comment)
 	{
 		Advertisement adv=this.advertisementService.findById(id);
 		adv.setStatus(AdvertisementStatus.DELETED);
@@ -139,7 +139,7 @@ public class AdvertisementController {
 		}
 		catch(Exception ex) {}
 		this.notifService.save(notif);
-		return new ResponseEntity<>(null,HttpStatus.OK);
+		return new ResponseEntity<>(adv.getAuthorId(),HttpStatus.OK);
 	
 	}
 	

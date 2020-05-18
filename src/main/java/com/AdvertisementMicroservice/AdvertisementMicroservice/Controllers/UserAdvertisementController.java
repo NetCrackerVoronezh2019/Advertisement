@@ -11,7 +11,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.UserAdvert
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.AdvertisementService;
 
 @RestController
-@CrossOrigin("https://helpui.herokuapp.com")
+@CrossOrigin("http://localhost:4200")
 public class UserAdvertisementController {
 
 	@Autowired

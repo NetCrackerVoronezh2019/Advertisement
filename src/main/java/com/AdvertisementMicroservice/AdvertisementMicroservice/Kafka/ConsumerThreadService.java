@@ -82,7 +82,7 @@ public class ConsumerThreadService {
         			while(true)
         	    	{
         				RestTemplate template=new RestTemplate();
-        	    		ConsumerRecords<String,String> records=microserviceInfoConsumer.poll(Duration.ofMillis(100));	
+        	    		ConsumerRecords<String,String> records=microserviceInfoConsumer.poll(Duration.ofMillis(100));
         	    		ResponseEntity<List<MicroserviceInfo>> res=template.exchange("http://192.168.99.103:7082/getAllInfo",HttpMethod.GET,null,new ParameterizedTypeReference<List<MicroserviceInfo>>(){});
             			micro.setMicroservicesInfo(res.getBody());
         	    	}
@@ -116,6 +116,7 @@ public class ConsumerThreadService {
                 		{
                 			RestTemplate template=new RestTemplate();
                 			ResponseEntity<List<Subject>> res=template.exchange("http://192.168.99.103:7082/getAllSubjects",HttpMethod.GET,null,new ParameterizedTypeReference<List<Subject>>(){});
+
                 			subjectService.addNewSubjects(res.getBody());
                 		}                		
                 	}

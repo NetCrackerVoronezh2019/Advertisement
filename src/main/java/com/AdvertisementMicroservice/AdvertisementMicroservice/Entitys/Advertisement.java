@@ -115,7 +115,7 @@ public class Advertisement {
 	public Collection<Attachment> getAttachments() {
 		return attachments;
 	}
-
+	
 	public void setAttachments(Collection<Attachment> attachments) {
 		this.attachments = attachments;
 	}
