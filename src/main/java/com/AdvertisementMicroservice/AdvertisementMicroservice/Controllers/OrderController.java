@@ -30,6 +30,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Kafka.Microservic
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AddAtachmentsModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AmazonModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AmazonModels;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AttachmentsFromDialog;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeOrderStatusModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeRatingModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.DeleteKeys;
@@ -79,7 +80,7 @@ public class OrderController {
 	    return new ResponseEntity<>(null,HttpStatus.OK);
 	}
 	@PostMapping("addAttachments")
-	public ResponseEntity<?> completeOrder(@RequestBody AddAtachmentsModel model)
+	public ResponseEntity<?> addAttachments (@RequestBody AddAtachmentsModel model)
 	{
 		Optional<Order> orderOptional=orderService.findByOrder(model.getOrderId());
 		Order order=orderOptional.get();
@@ -125,6 +126,56 @@ public class OrderController {
 		}	
 		return new ResponseEntity<>(null,HttpStatus.OK);
 	}
+	
+	
+	
+	@PostMapping("addAttachmentsFromDialog")
+	public ResponseEntity<?> completeOrder(@RequestBody AttachmentsFromDialog model)
+	{
+		Order order=orderService.findByChatId(model.getChatId());
+		AmazonModels amazon=new AmazonModels();
+		amazon.allFiles=model.getAllFiles();
+		List<OrderDocument> docs=order.getOrderDocuments();
+		int m=0;
+		int n=0;
+		int l=0;
+		if(docs==null)
+		{
+			m=0;
+			n=model.getAllFiles().size();
+		}
+		else
+		{
+			m=docs.size();
+			n=m+model.getAllFiles().size();
+		}
+		for(int i=m;i<n;i++)
+		{
+			OrderDocument orderDoc=new OrderDocument();
+			orderDoc.setDocumentKey("order_"+order.getOrderId()+"document_"+i);
+			orderDoc.setOrder(order);
+			orderDoc.setDocumentName(model.getAllFiles().get(l).getName());
+			this.orderDocumentService.save(orderDoc);
+			amazon.allFiles.get(l).setKey(orderDoc.getDocumentKey());
+			l++;
+		}
+		
+		HttpEntity<AmazonModels> requestEntity =new HttpEntity<>(amazon);
+		RestTemplate restTemplate = new RestTemplate();
+		String host=microservices.getHost();
+		String port=microservices.getAmazonPort();
+		try 
+		{
+		   ResponseEntity<Object> res=restTemplate.exchange("http://"+host+":"+port+"/uploadAdvertisementFiles",HttpMethod.POST,requestEntity,Object.class);
+		}
+		catch(Exception ex)
+		{
+			
+		
+		}	
+		return new ResponseEntity<>(null,HttpStatus.OK);
+	}
+	
 	
 	@GetMapping("getFreelancerAllFeedBack/{freelancerId}")
 	public ResponseEntity<List<OrderModel>> getFreelancerAllFeedBack(@PathVariable Long freelancerId)

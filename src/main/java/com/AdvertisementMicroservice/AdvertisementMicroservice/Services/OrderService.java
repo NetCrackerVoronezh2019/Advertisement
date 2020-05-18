@@ -28,6 +28,11 @@ public class OrderService {
 		return orderRep.findByCustomerId(id);
 	}
 	
+	public Order findByChatId(Integer id)
+	{
+		return this.orderRep.findByChatId(id).get();
+	}
+	
 	public Optional<List<Order>> findByFreelancerIdAndOrderStatus(Long id,OrderStatus status)
 	{
 		return this.orderRep.findAllByFreelancerIdAndOrderStatus(id, status.name());
