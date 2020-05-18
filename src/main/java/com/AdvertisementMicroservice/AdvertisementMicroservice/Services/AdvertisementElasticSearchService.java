@@ -48,7 +48,7 @@ public class AdvertisementElasticSearchService {
 		List<String> sections=new ArrayList<>();
 		sections=filters.getSubjects().stream().
 									  filter(e->e.isChecked()==true).
-									  map(e->e.getName().toLowerCase())
+									  map(e->e.getTranslateName().toLowerCase())
 								.collect(Collectors.toList());
 		
 		  List<String> tags=filters.getTags()
