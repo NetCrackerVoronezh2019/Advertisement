@@ -2,7 +2,7 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Models;
 
 import java.util.List;
 
-public class CompleteOrderModel {
+public class AddAtachmentsModel {
 	
 	private Long orderId;
 	private Long userId;

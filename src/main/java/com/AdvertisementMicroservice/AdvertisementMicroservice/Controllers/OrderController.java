@@ -27,11 +27,11 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderDocument;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Kafka.Microservices;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AddAtachmentsModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AmazonModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AmazonModels;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeOrderStatusModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.ChangeRatingModel;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.CompleteOrderModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.DeleteKeys;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.MyOrderModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.MyOrdersModel;
@@ -78,8 +78,8 @@ public class OrderController {
 	    
 	    return new ResponseEntity<>(null,HttpStatus.OK);
 	}
-	@PostMapping("completeOrder")
-	public ResponseEntity<?> completeOrder(@RequestBody CompleteOrderModel model)
+	@PostMapping("addAttachments")
+	public ResponseEntity<?> completeOrder(@RequestBody AddAtachmentsModel model)
 	{
 		Optional<Order> orderOptional=orderService.findByOrder(model.getOrderId());
 		Order order=orderOptional.get();
