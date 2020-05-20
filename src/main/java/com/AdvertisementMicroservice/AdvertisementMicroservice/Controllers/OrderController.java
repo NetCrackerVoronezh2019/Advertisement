@@ -133,8 +133,6 @@ public class OrderController {
 	public ResponseEntity<?> completeOrder(@RequestBody AttachmentsFromDialog model)
 	{
 		Order order=orderService.findByChatId(model.getChatId());
-		AmazonModels amazon=new AmazonModels();
-		amazon.allFiles=model.getAllFiles();
 		List<OrderDocument> docs=order.getOrderDocuments();
 		int m=0;
 		int n=0;
@@ -152,27 +150,12 @@ public class OrderController {
 		for(int i=m;i<n;i++)
 		{
 			OrderDocument orderDoc=new OrderDocument();
-			orderDoc.setDocumentKey("order_"+order.getOrderId()+"document_"+i);
+			orderDoc.setDocumentKey(model.getAllFiles().get(l).getContent());
 			orderDoc.setOrder(order);
 			orderDoc.setDocumentName(model.getAllFiles().get(l).getName());
 			this.orderDocumentService.save(orderDoc);
-			amazon.allFiles.get(l).setKey(orderDoc.getDocumentKey());
 			l++;
 		}
-		
-		HttpEntity<AmazonModels> requestEntity =new HttpEntity<>(amazon);
-		RestTemplate restTemplate = new RestTemplate();
-		String host=microservices.getHost();
-		String port=microservices.getAmazonPort();
-		try 
-		{
-		   ResponseEntity<Object> res=restTemplate.exchange("http://"+host+":"+port+"/uploadAdvertisementFiles",HttpMethod.POST,requestEntity,Object.class);
-		}
-		catch(Exception ex)
-		{
-			
-		
-		}	
 		return new ResponseEntity<>(null,HttpStatus.OK);
 	}
 	

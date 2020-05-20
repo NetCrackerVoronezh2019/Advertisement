@@ -202,6 +202,9 @@ public class NotificationController {
 						queryParam("creatorId",notif.getSenderId())
 						.queryParam("userId",notif.getAddresseeId())
 						.queryParam("advertisementName",adv.getAdvertisementName());
+				if (adv.getCoverImageKey() != null) {
+					uriBuilder.queryParam("key",adv.getCoverImageKey());
+				}
 				RestTemplate restTemplate = new RestTemplate();
 				ResponseEntity<Integer> res=restTemplate.exchange(uriBuilder.build().encode().toUri(),HttpMethod.POST,null,new ParameterizedTypeReference<Integer>(){});
 				order.setChateId(res.getBody());

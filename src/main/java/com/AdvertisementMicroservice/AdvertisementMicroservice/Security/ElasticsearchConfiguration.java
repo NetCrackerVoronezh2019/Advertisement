@@ -36,8 +36,8 @@ public class ElasticsearchConfiguration {
     	 Settings esSettings = Settings.builder()
                  .put("cluster.name", "mycluster")
                  .build();
-    	 
-    	@SuppressWarnings("resource")
+
+        @SuppressWarnings("resource")
 		TransportClient client = new PreBuiltTransportClient(esSettings)
     	        .addTransportAddress(new TransportAddress(InetAddress.getByName("192.168.99.103"), 9300));
     return client;
