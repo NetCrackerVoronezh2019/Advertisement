@@ -3,6 +3,7 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Controllers;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,6 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.*;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Tag;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Kafka.Microservices;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.*;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.AttachmentRepository;
@@ -153,8 +153,56 @@ public class AdvertisementController {
 		adv.setBudget(model.getBudget());
 		adv.setDescription(model.getDescription());
 		adv.setSection(model.getSection());
-		advertisementService.save(adv);
+		this.tagService.deletebyAdvId(adv.getAdvertisementId());
 		
+		advertisementService.save(adv);
+		AmazonModels amazon=new AmazonModels();
+		amazon.allFiles=model.getAllFiles();
+		for(Tag tag:model.getTags())
+		{
+			tag.setAdvertisement(adv);
+			tagService.save(tag);	
+		}
+		
+		Collection<Attachment> docs=adv.getAttachments();
+		int m=0;
+		int n=0;
+		int l=0;
+		if(docs==null)
+		{
+			m=0;
+			n=model.getAllFiles().size();
+		}
+		else
+		{
+			m=docs.size();
+			n=m+model.getAllFiles().size();
+		}
+		for(int i=m;i<n;i++)
+		{
+			Attachment attachment=new Attachment();
+			//String newKey="adv"+this.getAdvertisementId()+"_"+keys.get(i).getName();
+			attachment.setKey("adv"+adv.getAdvertisementId()+"document_"+model.getAllFiles().get(l).getName());
+			attachment.setAdvertisement(adv);
+			//attachment(model.getAllFiles().get(l).getName());
+			this.attachmentService.save(attachment);
+			amazon.allFiles.get(l).setKey(attachment.getKey());
+			l++;
+		}
+		
+		HttpEntity<AmazonModels> requestEntity =new HttpEntity<>(amazon);
+		RestTemplate restTemplate = new RestTemplate();
+		String host=microservices.getHost();
+		String port=microservices.getAmazonPort();
+		try 
+		{
+		   ResponseEntity<Object> res=restTemplate.exchange("http://"+host+":"+port+"/uploadAdvertisementFiles",HttpMethod.POST,requestEntity,Object.class);
+		}
+		catch(Exception ex)
+		{
+			
+		
+		}
 		return new ResponseEntity<>(null,HttpStatus.OK);
 	}
 	

@@ -25,4 +25,9 @@ public class TagService {
 	{
 		return this.tagRepository.findAllByAdvId(id);
 	}
+	
+	public void deletebyAdvId(Long id)
+	{
+		this.tagRepository.deletebyAdvId(id);
+	}
 }
