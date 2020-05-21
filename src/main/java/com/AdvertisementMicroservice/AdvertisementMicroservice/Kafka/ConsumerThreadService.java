@@ -51,7 +51,7 @@ public class ConsumerThreadService {
 	public void init()
 	{
 		try {
-		String bootstrapServers1="192.168.99.103:9092";
+		String bootstrapServers1="192.168.99.100:9092";
     	Properties properties1=new Properties();
     	properties1.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,bootstrapServers1);
     	properties1.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
@@ -83,7 +83,7 @@ public class ConsumerThreadService {
         	    	{
         				RestTemplate template=new RestTemplate();
         	    		ConsumerRecords<String,String> records=microserviceInfoConsumer.poll(Duration.ofMillis(100));
-        	    		ResponseEntity<List<MicroserviceInfo>> res=template.exchange("http://192.168.99.103:7082/getAllInfo",HttpMethod.GET,null,new ParameterizedTypeReference<List<MicroserviceInfo>>(){});
+        	    		ResponseEntity<List<MicroserviceInfo>> res=template.exchange("http://localhost:7082/getAllInfo",HttpMethod.GET,null,new ParameterizedTypeReference<List<MicroserviceInfo>>(){});
             			micro.setMicroservicesInfo(res.getBody());
         	    	}
         		}
@@ -91,12 +91,13 @@ public class ConsumerThreadService {
         		catch(WakeupException e)
         		{
         			System.out.println(e.getMessage()+" ------WakeupException");
+        			microserviceInfoConsumer.unsubscribe();
+        			microserviceInfoConsumer.close();
         		}
         		finally
         		{
-        			System.out.println("UNSUBSCRIBE");
-        			microserviceInfoConsumer.unsubscribe();
-        			microserviceInfoConsumer.close();
+        			
+        			
         			
         		}
             }
@@ -115,7 +116,7 @@ public class ConsumerThreadService {
                 		if(records.count()>0)
                 		{
                 			RestTemplate template=new RestTemplate();
-                			ResponseEntity<List<Subject>> res=template.exchange("http://192.168.99.103:7082/getAllSubjects",HttpMethod.GET,null,new ParameterizedTypeReference<List<Subject>>(){});
+                			ResponseEntity<List<String>> res=template.exchange("http://localhost:7082/getAllSubjects",HttpMethod.GET,null,new ParameterizedTypeReference<List<String>>(){});
 
                 			subjectService.addNewSubjects(res.getBody());
                 		}                		
@@ -125,11 +126,12 @@ public class ConsumerThreadService {
         		catch(Exception e)
         		{
         			System.out.println(e.getMessage());
+        			subjectConsumer.unsubscribe();
+        			subjectConsumer.close();
         		}
         		finally
         		{
-        			subjectConsumer.unsubscribe();
-        			subjectConsumer.close();
+        			
         			
         		}
             }

@@ -18,13 +18,15 @@ public class SubjectService {
 	@Autowired
 	private SubjectRepository subjectRepository;
 	
-	public void addNewSubjects(List<Subject> _subjects) {
+	public void addNewSubjects(List<String> _subjects) {
 		List<Subject> _allSubjects=subjectRepository.findAll();
-	    for(Subject subject:_subjects)
+	    for(String subject:_subjects)
 	    {
-	    	if(_allSubjects.stream().noneMatch(s->s.getName().equals(subject.getName())))
+	    	if(_allSubjects.stream().noneMatch(s->s.getTranslateName().equals(subject)))
 	    	{
-	    		subjectRepository.save(subject);
+	    		Subject _subject=new Subject();
+	    		_subject.setTranslateName(subject);
+	    		subjectRepository.save(_subject);
 	    	}
 	    }
 	}
