@@ -81,7 +81,7 @@ public class AdvertisementController {
         return documents;
 	}
 	
-	@GetMapping("delete")
+	@GetMapping("remove")
 	public void delete()
 	{
 		this.elasticService.deleteAll();
@@ -232,7 +232,10 @@ public class AdvertisementController {
 		
 		String[] keys=advertisement.getAttachmentKeys(adv.getAllFiles());
 		advertisement=advertisementService.save(advertisement);
-		advertisement.setCoverImageKey("advcoverImage_"+advertisement.getAdvertisementId());
+		if(adv.getCoverImage().getContent()!=null)
+		{
+			advertisement.setCoverImageKey("advcoverImage_"+advertisement.getAdvertisementId());
+		}
 		AmazonModel amazonModel=adv.getCoverImage();
 		amazonModel.setKey(advertisement.getCoverImageKey());
 		advertisement=advertisementService.save(advertisement);

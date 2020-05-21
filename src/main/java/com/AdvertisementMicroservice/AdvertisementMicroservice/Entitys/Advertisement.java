@@ -48,7 +48,7 @@ public class Advertisement {
 	@Column(name="NAME")
 	private String advertisementName;
 	
-	@Column(name="DESCRIPTION")
+	@Column(name="DESCRIPTION",length = 2000)
 	private String description;
 	
 	@Column(name="BUDGET")

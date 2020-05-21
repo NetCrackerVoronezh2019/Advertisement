@@ -19,13 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Notification;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationResponseStatus;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationStatus;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.NotificationType;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Order;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderDocument;
-import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.OrderStatus;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.*;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Kafka.Microservices;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AddAtachmentsModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.AmazonModel;
@@ -40,6 +34,7 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.OrderModel
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.RatingNot;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Models.isMyOrderModel;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys.OrderRepository;
+import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.AdvertisementElasticSearchService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.AdvertisementService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.NotificationService;
 import com.AdvertisementMicroservice.AdvertisementMicroservice.Services.OrderDocumentService;
@@ -65,6 +60,10 @@ public class OrderController {
 	
 	@Autowired
 	private Microservices microservices;
+	
+	@Autowired 
+	private AdvertisementElasticSearchService elasticService;
+	
 		
 	
 	@PostMapping("deleteOrderAttachments")
@@ -188,10 +187,7 @@ public class OrderController {
 			return new ResponseEntity<>(null,HttpStatus.OK);
 		Order order=optionalOrder.get();
 		OrderModel orderModel=OrderModel.orderToOrderModel(order);
-		if(orderModel.getFreelancerId().equals(model.getUserId()))
 			return new ResponseEntity<>(orderModel,HttpStatus.OK);
-		else
-			return new ResponseEntity<>(null,HttpStatus.OK);
 		
 	}
 	
@@ -299,12 +295,23 @@ public class OrderController {
 	public ResponseEntity<OrderModel> changeOrderStatus(@RequestBody ChangeOrderStatusModel model )
 	{
 		Optional<Order> order=orderService.findByOrder(model.getOrderId());
+		Advertisement adv;
 		Order o=order.get();
 		if(model.getRoleName().equals("ROLE_TEACHER") )
 		{
 			if(o.getFreelancerId().equals(model.getUserId()))
 			{
 				o.setStatus(OrderModel.nextOrderStatus(o.getStatus()));
+				if(o.getStatus()==OrderStatus.СOMPLETED)
+				{
+					 adv=o.getAdvertisement();
+					 adv.setStatus(AdvertisementStatus.ARCHIVED);
+					 this.advService.save(adv);
+					 try {
+						 this.elasticService.save(adv);
+					 }
+					 catch(Exception ex) {}
+				}
 				o=orderService.save(o);
 				Notification not=notService.generateOrderNotification(o.getStatus(),o.getOrderId());
 				notService.save(not);

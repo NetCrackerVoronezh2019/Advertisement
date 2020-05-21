@@ -3,6 +3,7 @@ package com.AdvertisementMicroservice.AdvertisementMicroservice.Controllers;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,9 +116,11 @@ public class NotificationController {
 	public ResponseEntity<Boolean> canSendRequest(@RequestBody SendAdvertisementNotificationModel model)
 	{
 		Notification not=notifService.findBySenderIdAndAdvertisementId(model.getSenderId(),model.getAdvertisementId());
-		if(not!=null)
-			return new ResponseEntity<>(false,HttpStatus.OK);
-		return new ResponseEntity<>(true,HttpStatus.OK);
+		Optional<Order> order=this.orderService.findByAdvertisementId(model.getAdvertisementId());
+		
+		if(not==null && order.isEmpty())
+			return new ResponseEntity<>(true,HttpStatus.OK);
+		return new ResponseEntity<>(false,HttpStatus.OK);
 	}
 	
 	@PostMapping("newNotification")
@@ -184,7 +187,6 @@ public class NotificationController {
 		{
 			newNotif=notifService.generateResponseNotification(notif);
 			Advertisement adv=this.advService.findById(notif.getAdvertisementId());
-			adv.setStatus(AdvertisementStatus.ARCHIVED);
 			this.advService.save(adv);
 			try
 			{
