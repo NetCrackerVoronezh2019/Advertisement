@@ -1,4 +1,6 @@
 package com.AdvertisementMicroservice.AdvertisementMicroservice.Repositorys;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,5 +12,6 @@ import com.AdvertisementMicroservice.AdvertisementMicroservice.Entitys.Subject;
 @Transactional
 public interface SubjectRepository extends JpaRepository<Subject,Long>{
 
-	public Subject findByName(String name);
+	public List<Subject> findByTranslateName(String name);
 }
+	

@@ -220,7 +220,7 @@ public class AdvertisementController {
 	{
 		
 		adv.setDateOfPublication(LocalDateTime.now());
-		Subject subject=this.subjectService.getByName(adv.getSection());
+		Subject subject=this.subjectService.getByName(adv.getSection()).get(0);
 		Advertisement advertisement=ModelUtils.AdvertisementModelToEntity(adv,subject.getTranslateName());
 		advertisement.setStatus(AdvertisementStatus.ACTIVE);
 		

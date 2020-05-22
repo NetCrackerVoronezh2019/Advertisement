@@ -37,9 +37,9 @@ public class SubjectService {
 		return subjectRepository.findAll();
 	}
 	
-	public Subject getByName(String _name)
+	public List<Subject> getByName(String _name)
 	{
-		return subjectRepository.findByName(_name);
+		return subjectRepository.findByTranslateName(_name);
 	}
 	
 	public Subject save(Subject subject)
