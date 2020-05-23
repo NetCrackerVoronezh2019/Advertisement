@@ -305,7 +305,6 @@ public class OrderController {
 				if(o.getStatus()==OrderStatus.СOMPLETED)
 				{
 					 adv=o.getAdvertisement();
-					 adv.setStatus(AdvertisementStatus.ARCHIVED);
 					 this.advService.save(adv);
 					 try {
 						 this.elasticService.save(adv);
