@@ -92,6 +92,21 @@ public class AdvertisementController {
 		return subjectService.getAllSubjects();
 	}
 	
+	@PostMapping("editSubject")
+	public ResponseEntity<?> editSubject(@RequestBody EditSubject model )
+	{
+		List<Subject> subjects=this.subjectService.getByName(model.getWithoutEdit());
+		if(subjects==null)
+			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+		if(subjects.get(0)==null)
+			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+		Subject s=subjects.get(0);
+		s.setTranslateName(model.getName());
+		this.subjectService.save(s);
+		return new ResponseEntity<>(null,HttpStatus.OK);
+		
+	}
+	
 	@GetMapping("allAdvertisements")
 	public ResponseEntity<List<Advertisement>> getAllAdvertisements()
 	{

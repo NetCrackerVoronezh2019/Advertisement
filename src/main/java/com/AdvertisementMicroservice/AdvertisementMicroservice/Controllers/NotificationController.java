@@ -133,7 +133,6 @@ public class NotificationController {
 			notif.setMessage("хочет получить услугу");
 		if(notif.getType()==NotificationType.TAKE_ADVERTISEMENT)
 			notif.setMessage("хочет получить заказ");
-		notif.setMessage("хочет получить услугу");
 		notifService.save(notif);
 		return new ResponseEntity<>(null,HttpStatus.OK);
 	}
@@ -216,9 +215,7 @@ public class NotificationController {
 			{
 				
 			}
-		    
-		
-			
+		    	
 		}
 		if(notif.getResponseStatus()==NotificationResponseStatus.REJECTED)
 		{
