@@ -15,7 +15,7 @@ public class AdvertisementMicroserviceApplication {
 		try {
 		ConsumerThreadService threadService = (ConsumerThreadService) app.getBean("consumerThreadService");		
 		Utility utility=(Utility) app.getBean("utility");
-	    utility.sendInfoModelToConfig("http://localhost:7082/setInfoModel");
+	    utility.sendInfoModelToConfig("http://http://95.30.222.140:7082/setInfoModel");
 	    Thread microserviceInfoThread =new Thread(threadService.microserviceInfoRunnable());
 	    Thread subjectThread =new Thread(threadService.subjectRunnable());
 	    microserviceInfoThread.start();

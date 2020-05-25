@@ -17,10 +17,10 @@ public interface OrderRepository  extends JpaRepository<Order,Long> {
 	
 	public List<Order> findByFreelancerId(Long id);
 	
-	@Query(value = "Select avg(starsforwork) from orders "
+	@Query(value = "Select sum(starsforwork) from orders "
 			+ "where starsforwork>0 and freelancerid=?1", 
 			  nativeQuery = true)
-	public Optional<Double> findAllRaitings(Long id);
+	public Optional<Double> findAllRaitingSum(Long id);
 	
 	
 	@Query(value = "Select * from orders where advertisementid=?1", 

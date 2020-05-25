@@ -171,9 +171,13 @@ public class OrderController {
 	@GetMapping("rating/{freelancerId}")
 	public  ResponseEntity<Double> getRaiting(@PathVariable Long freelancerId)
 	{
-		Optional<Double> rating=this.o.findAllRaitings(freelancerId);
+		Optional<Double> rating=this.o.findAllRaitingSum(freelancerId);
 		if(rating.isPresent())
-			return new ResponseEntity<>(rating.get(),HttpStatus.OK);
+		{
+			int size=this.o.findAllFeedBackByFreelancerId(freelancerId).get().size();
+			double newRating=(rating.get()+5)/(size+1);
+			return new ResponseEntity<>((double) Math.round(newRating * 100) / 100,HttpStatus.OK);
+		}
 		return new ResponseEntity<>(null,HttpStatus.OK);
 	}
 	

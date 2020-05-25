@@ -31,7 +31,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
         .authorizeRequests() 
-        .antMatchers("/**").permitAll()
+        .antMatchers("/**").hasRole("MICRO")
         .anyRequest().authenticated()
         .and()
 		 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

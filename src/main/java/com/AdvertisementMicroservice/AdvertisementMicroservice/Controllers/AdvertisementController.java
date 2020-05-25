@@ -146,7 +146,7 @@ public class AdvertisementController {
 		notif.setAddresseeId(userId);
 		notif.setDate(LocalDateTime.now());
 		notif.setType(NotificationType.DELETE_ADVERTISEMENT);
-		String message="Объявление удалено администратором,причина - "+comment;
+		String message="Объявление  "+adv.getAdvertisementName()+ " удалено администратором,причина - "+comment;
 		notif.setMessage(message);
 		try
 		{
