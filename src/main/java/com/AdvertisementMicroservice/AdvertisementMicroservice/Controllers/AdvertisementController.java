@@ -163,7 +163,6 @@ public class AdvertisementController {
 	public ResponseEntity<?> updateAdvertisementInformation(@RequestBody AdvertisementModel model)
 	{
 		Advertisement adv=advertisementService.findById(model.getAdvertisementId());
-		//adv.setDeadline(model.getDeadline());
 		adv.setAdvertisementName(model.getAdvertisementName());
 		adv.setBudget(model.getBudget());
 		adv.setDescription(model.getDescription());
@@ -205,6 +204,8 @@ public class AdvertisementController {
 			l++;
 		}
 		
+		Advertisement advx=this.advertisementService.findById(model.getAdvertisementId());
+		this.elasticService.save(advx);
 		HttpEntity<AmazonModels> requestEntity =new HttpEntity<>(amazon);
 		RestTemplate restTemplate = new RestTemplate();
 		String host=microservices.getHost();
